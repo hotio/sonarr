@@ -1,0 +1,10 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+umask "${UMASK}"
+
+if [[ "$VERSION" != "v3" ]]; then
+    exec s6-setuidgid hotio mono --debug "${APP_DIR}/NzbDrone.exe" --nobrowser --data="${CONFIG_DIR}/app"
+else
+    exec s6-setuidgid hotio mono --debug "${APP_DIR}/Sonarr.exe" --nobrowser --data="${CONFIG_DIR}/app"
+fi
