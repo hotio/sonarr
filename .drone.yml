@@ -13,7 +13,7 @@ steps:
   commands:
     - for file in $(find ./root -type f); do shellcheck $file; done;
 
-- name: sonarr
+- name: build
   image: plugins/docker
   pull: always
   settings:
