@@ -12,3 +12,4 @@ RUN curl -fsSL "https://download.sonarr.tv/v2/master/mono/NzbDrone.master.2.0.0.
     chmod -R u=rwX,go=rX "${APP_DIR}"
 
 COPY root/ /
+
