@@ -1,10 +1,11 @@
+---
 kind: pipeline
-name: default
+name: checks
 
 trigger:
   event:
-    exclude:
-      - pull_request
+    - tag
+    - push
 
 steps:
 - name: shellcheck
@@ -14,6 +15,19 @@ steps:
     - shellcheck --version
     - for file in $(find ./root -type f); do echo $file; shellcheck $file; done;
 
+---
+kind: pipeline
+name: develop-amd64
+
+platform:
+  os: linux
+  arch: amd64
+
+trigger:
+  event:
+    - push
+
+steps:
 - name: build
   image: plugins/docker
   pull: always
@@ -23,12 +37,123 @@ steps:
     password:
       from_secret: docker_password
     repo: hotio/sonarr
-    auto_tag: true
-    cache_from: "hotio/sonarr"
+    cache_from: hotio/sonarr:develop
+    tags:
+      - develop-linux-amd64
 
-- name: microbadger
-  image: plugins/webhook
+depends_on:
+  - checks
+
+---
+kind: pipeline
+name: release-amd64
+
+platform:
+  os: linux
+  arch: amd64
+
+trigger:
+  event:
+    - tag
+
+steps:
+- name: build
+  image: plugins/docker
   pull: always
   settings:
-    urls:
-      - https://hooks.microbadger.com/images/hotio/sonarr/cbLwPTjj0XEuYZ9GCFWhotavTiw=
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: hotio/sonarr
+    cache_from: hotio/sonarr
+    tags:
+      - ${DRONE_TAG}-linux-amd64
+
+depends_on:
+  - checks
+
+---
+kind: pipeline
+name: release-arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+trigger:
+  event:
+    - tag
+
+steps:
+- name: build
+  image: plugins/docker
+  pull: always
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: hotio/sonarr
+    cache_from: hotio/sonarr
+    tags:
+      - ${DRONE_TAG}-linux-arm64
+
+depends_on:
+  - checks
+
+---
+kind: pipeline
+name: release-arm
+
+platform:
+  os: linux
+  arch: arm
+
+trigger:
+  event:
+    - tag
+
+steps:
+- name: build
+  image: plugins/docker
+  pull: always
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: hotio/sonarr
+    cache_from: hotio/sonarr
+    tags:
+      - ${DRONE_TAG}-linux-arm
+
+depends_on:
+  - checks
+
+---
+kind: pipeline
+name: manifest
+
+trigger:
+  event:
+    - tag
+    - push
+
+steps:
+- name: manifest
+  image: plugins/manifest
+  pull: always
+  settings:
+    ignore_missing: true
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    spec: manifest.tmpl
+
+depends_on:
+  - develop-amd64
+  - release-amd64
+  - release-arm64
+  - release-arm
