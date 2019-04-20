@@ -46,6 +46,64 @@ depends_on:
 
 ---
 kind: pipeline
+name: develop-arm64
+
+platform:
+  os: linux
+  arch: arm64
+
+trigger:
+  event:
+    - push
+
+steps:
+- name: build
+  image: plugins/docker
+  pull: always
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: hotio/sonarr
+    cache_from: hotio/sonarr:develop
+    tags:
+      - develop-linux-arm64
+
+depends_on:
+  - checks
+
+---
+kind: pipeline
+name: develop-arm
+
+platform:
+  os: linux
+  arch: arm
+
+trigger:
+  event:
+    - push
+
+steps:
+- name: build
+  image: plugins/docker
+  pull: always
+  settings:
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    repo: hotio/sonarr
+    cache_from: hotio/sonarr:develop
+    tags:
+      - develop-linux-arm
+
+depends_on:
+  - checks
+
+---
+kind: pipeline
 name: release-amd64
 
 platform:
@@ -154,6 +212,8 @@ steps:
 
 depends_on:
   - develop-amd64
+  - develop-arm64
+  - develop-arm
   - release-amd64
   - release-arm64
   - release-arm
