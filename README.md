@@ -101,7 +101,7 @@ environment:
   - RAR2FS=/folder1-rar,/folder1-unrar|/folder2-rar,/folder2-unrar
 ```
 
-## Extra docker priviliges
+## Extra docker privileges
 
 In most cases you will need some or all of the following flags added to your command to get the required docker privileges when using a rclone or rar2fs mount.
 
