@@ -57,7 +57,6 @@ Possible values for `VERSION`:
 VERSION=image
 VERSION=stable
 VERSION=unstable
-VERSION=v3
 VERSION=https://download.sonarr.tv/v2/master/mono/NzbDrone.master.2.0.0.5228.mono.tar.gz
 VERSION=file:///config/NzbDrone.master.2.0.0.5228.mono.tar.gz
 ```

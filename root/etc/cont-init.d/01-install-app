@@ -13,9 +13,6 @@ if [[ "${VERSION}" != "image" ]]; then
             unstable)
                 url="https://download.sonarr.tv/v2/develop/mono/NzbDrone.develop.tar.gz"
                 ;;
-            v3)
-                url="https://services.sonarr.tv/v1/download/phantom-develop/latest?version=3&os=linux"
-                ;;
             *)
                 url="${VERSION}"
                 ;;

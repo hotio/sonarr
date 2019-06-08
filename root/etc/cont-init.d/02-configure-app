@@ -4,4 +4,3 @@
 umask "${UMASK}"
 
 rm -f "${CONFIG_DIR}/app/nzbdrone.pid"
-rm -f "${CONFIG_DIR}/app/sonarr.pid"
