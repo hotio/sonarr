@@ -18,18 +18,6 @@ Just the basics to get the container running:
 docker run --rm --name sonarr -p 8989:8989 -v /tmp/sonarr:/config -e TZ=Etc/UTC hotio/sonarr
 ```
 
-```yaml
-sonarr:
-  container_name: sonarr
-  image: hotio/sonarr
-  ports:
-    - "8989:8989"
-  volumes:
-    - /tmp/sonarr:/config
-  environment:
-    - TZ=Etc/UTC
-```
-
 The environment variables `PUID`, `PGID`, `UMASK`, `VERSION` and `BACKUP` are all optional, the values you see below are the default values.
 
 By default the image comes with a stable version. You can however install a different version with the environment variable `VERSION`. The value `image` does nothing, but keep the included version, all the others install a different version when starting the container.
@@ -40,15 +28,6 @@ By default the image comes with a stable version. You can however install a diff
 -e UMASK=022
 -e VERSION=image
 -e BACKUP=yes
-```
-
-```yaml
-environment:
-  - PUID=1000
-  - PGID=1000
-  - UMASK=022
-  - VERSION=image
-  - BACKUP=yes
 ```
 
 Possible values for `VERSION`:
@@ -69,22 +48,12 @@ By default on every docker container shutdown a backup is created from the confi
 -e BACKUP=no
 ```
 
-```yaml
-environment:
-  - BACKUP=no
-```
-
 ## Using a rclone mount
 
 Mounting a remote filesystem using `rclone` can be done with the environment variable `RCLONE`. Use `docker exec -it --user hotio CONTAINERNAME rclone config` to configure your remote when the container is running. Configuration files for `rclone` are stored in `/config/.config/rclone`.
 
 ```shell
 -e RCLONE="remote1:path/to/files,/localmount1|remote2:path/to/files,/localmount2"
-```
-
-```yaml
-environment:
-  - RCLONE=remote1:path/to/files,/localmount1|remote2:path/to/files,/localmount2
 ```
 
 ## Using a rar2fs mount
@@ -95,11 +64,6 @@ Mounting a filesystem using `rar2fs` can be done with the environment variable `
 -e RAR2FS="/folder1-rar,/folder1-unrar|/folder2-rar,/folder2-unrar"
 ```
 
-```yaml
-environment:
-  - RAR2FS=/folder1-rar,/folder1-unrar|/folder2-rar,/folder2-unrar
-```
-
 ## Extra docker privileges
 
 In most cases you will need some or all of the following flags added to your command to get the required docker privileges when using a rclone or rar2fs mount.
@@ -108,11 +72,18 @@ In most cases you will need some or all of the following flags added to your com
 --security-opt apparmor:unconfined --cap-add SYS_ADMIN --device /dev/fuse
 ```
 
-```yaml
-security_opt:
-  - apparmor:unconfined
-cap_add:
-  - SYS_ADMIN
-devices:
-  - /dev/fuse
+## Execute scripts at startup
+
+If you need additional dependencies for your pp-scripts, you can install these by placing your script in the folder `/config/scripts.d`, an example script can be seen below. This script would install the `sickbeard_mp4_automator` scripts and its dependencies.
+
+```shell
+#!/bin/bash
+
+if [[ ! -d /sma ]]; then
+  apt update
+  apt install -y --no-install-recommends --no-install-suggests python-pip python-setuptools ffmpeg
+  pip --no-cache-dir install requests requests[security] requests-cache babelfish stevedore==1.19.1 python-dateutil deluge-client qtfaststart "guessit<2" "subliminal<2"
+  mkdir /sma
+  curl -fsSL "https://github.com/mdhiggins/sickbeard_mp4_automator/archive/c29bde3b2b4cfc194e5bb3a868b248acd2780d89.tar.gz" | tar xzf - -C "/sma" --strip-components=1
+fi
 ```
