@@ -5,10 +5,6 @@ umask "${UMASK}"
 
 if [[ "${BACKUP}" == "yes" ]]; then
     BACKUP_PATH="${CONFIG_DIR}/app-backups/${APP}_backup_$(date +%Y.%m.%d_%H.%M.%S).tar.gz"
-    if [[ "${VERSION}" != "v3" ]]; then
-        tar -czf "${BACKUP_PATH}" -C "${CONFIG_DIR}" "app/nzbdrone.db" "app/config.xml"
-    else
-        tar -czf "${BACKUP_PATH}" -C "${CONFIG_DIR}" "app/sonarr.db" "app/config.xml"
-    fi
+    tar -czf "${BACKUP_PATH}" -C "${CONFIG_DIR}" "app/nzbdrone.db" "app/config.xml"
     chown hotio:hotio "${BACKUP_PATH}"
 fi
