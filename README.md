@@ -18,16 +18,13 @@ Just the basics to get the container running:
 docker run --rm --name sonarr -p 8989:8989 -v /tmp/sonarr:/config -e TZ=Etc/UTC hotio/sonarr
 ```
 
-The environment variables `PUID`, `PGID`, `UMASK`, `VERSION` and `BACKUP` are all optional, the values you see below are the default values.
-
-By default the image comes with a stable version. You can however install a different version with the environment variable `VERSION`. The value `image` does nothing, but keep the included version, all the others install a different version when starting the container.
+The environment variables below are all optional, the values you see are the defaults.
 
 ```shell
 -e PUID=1000
 -e PGID=1000
 -e UMASK=022
 -e VERSION=image
--e BACKUP=yes
 ```
 
 Possible values for `VERSION`:
@@ -38,14 +35,6 @@ VERSION=stable
 VERSION=unstable
 VERSION=https://download.sonarr.tv/v2/master/mono/NzbDrone.master.2.0.0.5228.mono.tar.gz
 VERSION=file:///config/NzbDrone.master.2.0.0.5228.mono.tar.gz
-```
-
-## Backing up the configuration
-
-By default on every docker container shutdown a backup is created from the configuration files. You can change this behaviour.
-
-```shell
--e BACKUP=no
 ```
 
 ## Using a rclone mount

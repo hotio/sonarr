@@ -1,0 +1,28 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+umask "${UMASK}"
+
+figlet "${APP}"
+
+echo "
+----------------------------------------------------------------------
+ENVIRONMENT
+----------------------------------------------------------------------
+PUID=${PUID}
+PGID=${PGID}
+UMASK=${UMASK}
+VERSION=${VERSION}
+TZ=${TZ}
+RCLONE=${RCLONE}
+RAR2FS=${RAR2FS}
+----------------------------------------------------------------------
+"
+
+groupmod -o -g "${PGID}" hotio
+usermod -o -u "${PUID}" hotio
+
+if [[ ! -d "${CONFIG_DIR}/app" ]]; then
+    mkdir "${CONFIG_DIR}/app"
+    chown hotio:hotio "${CONFIG_DIR}/app"
+fi

@@ -1,0 +1,30 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+umask "${UMASK}"
+
+if [[ "${RCLONE}" == *:*,* ]]; then
+    if [[ -f "${XDG_CONFIG_HOME}/rclone/rclone.conf" ]]; then
+        DEFAULTIFS="${IFS}"
+        IFS='|' && read -r -a mounts <<< "${RCLONE}" && IFS="${DEFAULTIFS}"
+
+        for mount in "${mounts[@]}"; do
+            IFS=',' && read -r -a mountparts <<< "${mount}" && IFS="${DEFAULTIFS}"
+            mkdir -p "${mountparts[1]}"
+            rclone mount "${mountparts[0]}" "${mountparts[1]}" --daemon --allow-other --uid "${PUID}" --gid "${PGID}" --umask "${UMASK}" && echo -e '\e[32m'"Mounting ${mountparts[0]} as ${mountparts[1]} succeeded."'\e[0m' || echo -e '\e[31m'"Mounting ${mountparts[0]} as ${mountparts[1]} failed!"'\e[0m'
+        done
+    else
+        echo -e '\e[33m'"No rclone.conf configuration file found! Skipping rclone mount."'\e[0m'
+    fi
+fi
+
+if [[ "${RAR2FS}" == /* ]]; then
+    DEFAULTIFS="${IFS}"
+    IFS='|' && read -r -a mounts <<< "${RAR2FS}" && IFS="${DEFAULTIFS}"
+
+    for mount in "${mounts[@]}"; do
+        IFS=',' && read -r -a mountparts <<< "${mount}" && IFS="${DEFAULTIFS}"
+        mkdir -p "${mountparts[1]}"
+        rar2fs --date-rar --seek-length=1 -o allow_other -o uid="${PUID}" -o gid="${PGID}" -o ro "${mountparts[0]}" "${mountparts[1]}" && echo -e '\e[32m'"Mounting ${mountparts[0]} as ${mountparts[1]} succeeded."'\e[0m' || echo -e '\e[31m'"Mounting ${mountparts[0]} as ${mountparts[1]} failed!"'\e[0m'
+    done
+fi
