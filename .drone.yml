@@ -40,9 +40,8 @@ steps:
     repo: hotio/sonarr
     cache_from: hotio/sonarr
     build_args:
-      - GIT_COMMIT=${DRONE_COMMIT_SHA}
-      - GIT_TAG=${DRONE_TAG:-develop}
-      - ARCH=${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+      - COMMIT=${DRONE_COMMIT_SHA}
+      - TAG=${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     tags:
       - ${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
@@ -74,9 +73,8 @@ steps:
     repo: hotio/sonarr
     cache_from: hotio/sonarr
     build_args:
-      - GIT_COMMIT=${DRONE_COMMIT_SHA}
-      - GIT_TAG=${DRONE_TAG:-develop}
-      - ARCH=${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+      - COMMIT=${DRONE_COMMIT_SHA}
+      - TAG=${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     tags:
       - ${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
@@ -108,9 +106,8 @@ steps:
     repo: hotio/sonarr
     cache_from: hotio/sonarr
     build_args:
-      - GIT_COMMIT=${DRONE_COMMIT_SHA}
-      - GIT_TAG=${DRONE_TAG:-develop}
-      - ARCH=${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+      - COMMIT=${DRONE_COMMIT_SHA}
+      - TAG=${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     tags:
       - ${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
