@@ -3,12 +3,14 @@
 
 umask "${UMASK}"
 
-figlet "${APP}"
-
 echo "
 ----------------------------------------------------------------------
 ENVIRONMENT
 ----------------------------------------------------------------------
+APP=${APP}
+GIT_COMMIT=${GIT_COMMIT}
+GIT_TAG=${GIT_TAG}
+ARCH=${ARCH}
 PUID=${PUID}
 PGID=${PGID}
 UMASK=${UMASK}
