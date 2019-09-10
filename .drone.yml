@@ -37,13 +37,13 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    repo: hotio/sonarr
-    cache_from: hotio/sonarr
+    repo: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
+    cache_from: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     build_args:
       - COMMIT=${DRONE_COMMIT_SHA}
-      - TAG=${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+      - TAG=${DRONE_TAG=develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     tags:
-      - ${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+      - ${DRONE_TAG=develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
 depends_on:
   - checks
@@ -70,13 +70,13 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    repo: hotio/sonarr
-    cache_from: hotio/sonarr
+    repo: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
+    cache_from: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     build_args:
       - COMMIT=${DRONE_COMMIT_SHA}
-      - TAG=${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+      - TAG=${DRONE_TAG=develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     tags:
-      - ${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+      - ${DRONE_TAG=develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
 depends_on:
   - checks
@@ -103,13 +103,13 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    repo: hotio/sonarr
-    cache_from: hotio/sonarr
+    repo: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
+    cache_from: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     build_args:
       - COMMIT=${DRONE_COMMIT_SHA}
-      - TAG=${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+      - TAG=${DRONE_TAG=develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     tags:
-      - ${DRONE_TAG:-develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+      - ${DRONE_TAG=develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
 depends_on:
   - checks
@@ -139,3 +139,23 @@ depends_on:
   - linux-amd64
   - linux-arm64
   - linux-arm
+
+---
+kind: pipeline
+name: dockerhub-description
+
+trigger:
+  event:
+    - tag
+    - push
+
+steps:
+- name: dockerhub-description
+  image: peterevans/dockerhub-description:2.0.0
+  pull: always
+  environment:
+    DOCKERHUB_USERNAME:
+      from_secret: docker_username
+    DOCKERHUB_PASSWORD:
+      from_secret: docker_password
+    DOCKERHUB_REPOSITORY: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}

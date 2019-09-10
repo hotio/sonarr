@@ -1,8 +1,7 @@
-# [Sonarr](https://github.com/Sonarr/Sonarr)
+# [docker-sonarr](https://github.com/hotio/docker-sonarr)
 
-[![badge](https://images.microbadger.com/badges/image/hotio/sonarr.svg)](https://microbadger.com/images/hotio/sonarr "Get your own image badge on microbadger.com")
-[![badge](https://images.microbadger.com/badges/version/hotio/sonarr.svg)](https://microbadger.com/images/hotio/sonarr "Get your own version badge on microbadger.com")
-[![badge](https://images.microbadger.com/badges/commit/hotio/sonarr.svg)](https://microbadger.com/images/hotio/sonarr "Get your own commit badge on microbadger.com")
+![Docker Pulls](https://img.shields.io/docker/pulls/hotio/sonarr?style=flat-square)
+![Drone (cloud)](https://img.shields.io/drone/build/hotio/docker-sonarr?style=flat-square)
 
 ## Donations
 
