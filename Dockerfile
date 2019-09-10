@@ -1,11 +1,7 @@
 FROM hotio/mono
 
 ARG DEBIAN_FRONTEND="noninteractive"
-ARG COMMIT
-ARG TAG
 
-ENV COMMIT="${COMMIT}" TAG="${TAG}"
-ENV APP="Sonarr"
 EXPOSE 8989
 HEALTHCHECK --interval=60s CMD curl -fsSL http://localhost:8989 || exit 1
 
@@ -15,3 +11,9 @@ RUN curl -fsSL "https://download.sonarr.tv/v2/master/mono/NzbDrone.master.2.0.0.
     chmod -R u=rwX,go=rX "${APP_DIR}"
 
 COPY root/ /
+
+ARG COMMIT
+ARG TAG
+ARG APP
+
+ENV COMMIT="${COMMIT}" TAG="${TAG}" APP="${APP}"

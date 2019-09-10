@@ -40,6 +40,7 @@ steps:
     repo: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     cache_from: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     build_args:
+      - APP=${DRONE_REPO_NAME##docker-}
       - COMMIT=${DRONE_COMMIT_SHA}
       - TAG=${DRONE_TAG=develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     tags:
@@ -73,6 +74,7 @@ steps:
     repo: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     cache_from: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     build_args:
+      - APP=${DRONE_REPO_NAME##docker-}
       - COMMIT=${DRONE_COMMIT_SHA}
       - TAG=${DRONE_TAG=develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     tags:
@@ -106,6 +108,7 @@ steps:
     repo: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     cache_from: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     build_args:
+      - APP=${DRONE_REPO_NAME##docker-}
       - COMMIT=${DRONE_COMMIT_SHA}
       - TAG=${DRONE_TAG=develop}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     tags:
