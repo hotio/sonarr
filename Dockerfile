@@ -12,8 +12,5 @@ RUN curl -fsSL "https://download.sonarr.tv/v2/master/mono/NzbDrone.master.2.0.0.
 
 COPY root/ /
 
-ARG COMMIT
 ARG TAG
-ARG APP
-
-ENV COMMIT="${COMMIT}" TAG="${TAG}" APP="${APP}"
+ENV TAG="${TAG}"
