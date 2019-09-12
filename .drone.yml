@@ -1,5 +1,26 @@
 ---
 kind: pipeline
+name: dockerhub-description
+
+trigger:
+  event:
+    - push
+  branch:
+    - master
+
+steps:
+- name: update
+  image: peterevans/dockerhub-description:2.0.0
+  pull: always
+  environment:
+    DOCKERHUB_USERNAME:
+      from_secret: docker_username
+    DOCKERHUB_PASSWORD:
+      from_secret: docker_password
+    DOCKERHUB_REPOSITORY: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
+
+---
+kind: pipeline
 name: checks
 
 trigger:
@@ -109,16 +130,17 @@ depends_on:
 
 ---
 kind: pipeline
-name: manifest-master
+name: manifest
 
 trigger:
   event:
     - push
-  branch:
-    - master
 
 steps:
-- name: manifest
+- name: master
+  when:
+    branch:
+      - master
   image: plugins/manifest
   pull: always
   settings:
@@ -134,24 +156,11 @@ steps:
       - linux/arm
       - linux/arm64
 
-depends_on:
-  - linux-amd64
-  - linux-arm64
-  - linux-arm
-
----
-kind: pipeline
-name: manifest-branch
-
-trigger:
-  event:
-    - push
-  branch:
-    exclude:
-      - master
-
-steps:
-- name: manifest
+- name: branch
+  when:
+    branch:
+      exclude:
+        - master
   image: plugins/manifest
   pull: always
   settings:
@@ -171,24 +180,3 @@ depends_on:
   - linux-amd64
   - linux-arm64
   - linux-arm
-
----
-kind: pipeline
-name: dockerhub-description
-
-trigger:
-  event:
-    - push
-  branch:
-    - master
-
-steps:
-- name: dockerhub-description
-  image: peterevans/dockerhub-description:2.0.0
-  pull: always
-  environment:
-    DOCKERHUB_USERNAME:
-      from_secret: docker_username
-    DOCKERHUB_PASSWORD:
-      from_secret: docker_password
-    DOCKERHUB_REPOSITORY: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
