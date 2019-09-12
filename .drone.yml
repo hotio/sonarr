@@ -33,7 +33,7 @@ steps:
   pull: always
   commands:
     - shellcheck --version
-    - for file in $(find ./root -type f); do echo $file; shellcheck $file; done;
+    - for file in $(find ./root -type f -not -path "*versions*"); do echo $file; shellcheck $file; done;
 
 ---
 kind: pipeline
@@ -58,8 +58,7 @@ steps:
       from_secret: docker_password
     repo: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     cache_from: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
-    build_args:
-      - TAG=${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+    dockerfile: ${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}.Dockerfile
     tags:
       - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
@@ -89,8 +88,7 @@ steps:
       from_secret: docker_password
     repo: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     cache_from: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
-    build_args:
-      - TAG=${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+    dockerfile: ${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}.Dockerfile
     tags:
       - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
@@ -120,8 +118,7 @@ steps:
       from_secret: docker_password
     repo: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
     cache_from: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}
-    build_args:
-      - TAG=${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+    dockerfile: ${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}.Dockerfile
     tags:
       - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
