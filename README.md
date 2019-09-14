@@ -55,18 +55,12 @@ In most cases you will need some or all of the following flags added to your com
 --security-opt apparmor:unconfined --cap-add SYS_ADMIN --device /dev/fuse
 ```
 
-## Execute scripts at startup
+## Executing your own scripts
 
-If you need additional dependencies for your pp-scripts, you can install these by placing your script in the folder `/config/scripts.d`, an example script can be seen below. This script would install the `sickbeard_mp4_automator` scripts and its dependencies.
+If you have a need to do additional stuff when the container starts or stops, you can mount your script with `-v /docker/host/my-script.sh:/etc/cont-init.d/99-my-script` to execute your script on container start or `-v /docker/host/my-script.sh:/etc/cont-finish.d/99-my-script` to execute it when the container stops. An example script can be seen below.
 
 ```shell
-#!/bin/bash
+#!/usr/bin/with-contenv bash
 
-if [[ ! -d /sma ]]; then
-  apt update
-  apt install -y --no-install-recommends --no-install-suggests python-pip python-setuptools ffmpeg
-  pip --no-cache-dir install requests requests[security] requests-cache babelfish stevedore==1.19.1 python-dateutil deluge-client qtfaststart guessit==1.0.3 subliminal==1.1.1
-  mkdir /sma
-  curl -fsSL "https://github.com/mdhiggins/sickbeard_mp4_automator/archive/c29bde3b2b4cfc194e5bb3a868b248acd2780d89.tar.gz" | tar xzf - -C "/sma" --strip-components=1
-fi
+echo "Hello, this is me, your script."
 ```
