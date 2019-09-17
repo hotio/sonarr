@@ -33,7 +33,7 @@ steps:
   pull: always
   commands:
     - shellcheck --version
-    - for file in $(find ./root -type f -not -path "*versions*"); do echo $file; shellcheck $file; done;
+    - for file in $(find ./root -type f); do echo $file; shellcheck $file; done;
 
 ---
 kind: pipeline
@@ -169,6 +169,22 @@ steps:
     password:
       from_secret: docker_password
     target: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}
+    template: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-OS-ARCH
+    platforms:
+      - linux/amd64
+      - linux/arm
+      - linux/arm64
+
+- name: branch-commit
+  image: plugins/manifest
+  pull: always
+  settings:
+    ignore_missing: true
+    username:
+      from_secret: docker_username
+    password:
+      from_secret: docker_password
+    target: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}
     template: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-OS-ARCH
     platforms:
       - linux/amd64
