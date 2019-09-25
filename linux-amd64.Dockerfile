@@ -4,7 +4,6 @@ FROM hotio/mono:${BRANCH}
 ARG DEBIAN_FRONTEND="noninteractive"
 
 EXPOSE 8989
-HEALTHCHECK --interval=60s CMD curl -fsSL http://localhost:8989 || exit 1
 
 COPY root/ /
 
