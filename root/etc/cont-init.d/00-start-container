@@ -12,8 +12,6 @@ PGID=${PGID}
 UMASK=${UMASK}
 VERSION=${VERSION}
 TZ=${TZ}
-RCLONE=${RCLONE}
-RAR2FS=${RAR2FS}
 ----------------------------------------------------------------------
 "
 
