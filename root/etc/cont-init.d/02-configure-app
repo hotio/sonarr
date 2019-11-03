@@ -1,6 +1,0 @@
-#!/usr/bin/with-contenv bash
-# shellcheck shell=bash
-
-umask "${UMASK}"
-
-rm -f "${CONFIG_DIR}/app/nzbdrone.pid"
