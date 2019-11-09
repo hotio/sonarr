@@ -1,0 +1,23 @@
+name: Weekly build
+on:
+  schedule:
+    - cron:  '0 22 * * 5'
+
+jobs:
+  update-master:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: Configure git
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+    - name: Update .weekly-build file and commit changes
+      run: |
+        date > .weekly-build
+        git add .weekly-build
+        git commit -m "Weekly build"
+    - name: Push changes
+      uses: ad-m/github-push-action@master
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
