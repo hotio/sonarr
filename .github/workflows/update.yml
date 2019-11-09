@@ -1,7 +1,7 @@
 name: Version check
 on:
   schedule:
-    - cron:  '2,12,22,32,42,52 * * * *'
+    - cron:  '15,45 * * * *'
 
 jobs:
   update-master:
