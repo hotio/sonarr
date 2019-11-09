@@ -185,7 +185,7 @@ steps:
       - linux/arm
       - linux/arm64
 
-- name: version
+- name: branch-version
   image: plugins/manifest
   pull: always
   settings:
@@ -194,7 +194,7 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    target: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${TAG_VERSION=2.0.0.5338}
+    target: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${TAG_VERSION=2.0.0.5338}
     template: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-OS-ARCH
     platforms:
       - linux/amd64
