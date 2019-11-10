@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ###################
-version=$(curl -fsSL "https://services.sonarr.tv/v1/download/master" | jq -r .version)
+version=$(curl -fsSL "https://services.sonarr.tv/v1/download/develop" | jq -r .version)
 app=SONARR
 ###################
 
