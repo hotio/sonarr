@@ -22,11 +22,12 @@ The environment variables below are all optional, the values you see are the def
 
 ## Tags
 
-| Tag     | Description          |
-| --------|----------------------|
-| latest  | Stable version, V2   |
-| master  | Stable version, V2   |
-| phantom | Unstable version, V3 |
+| Tag      | Description          |
+| ---------|----------------------|
+| latest   | Stable version, V2   |
+| master   | Stable version, V2   |
+| unstable | Unstable version, V2 |
+| phantom  | Unstable version, V3 |
 
 You can also find tags that reference a commit or version number.
 
