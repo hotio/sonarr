@@ -10,7 +10,6 @@ ENVIRONMENT
 PUID=${PUID}
 PGID=${PGID}
 UMASK=${UMASK}
-VERSION=${VERSION}
 TZ=${TZ}
 ----------------------------------------------------------------------
 "
