@@ -20,6 +20,16 @@ The environment variables below are all optional, the values you see are the def
 -e UMASK=022
 ```
 
+## Tags
+
+| Tag     | Description          |
+| --------|----------------------|
+| latest  | Stable version, V2   |
+| master  | Stable version, V2   |
+| phantom | Unstable version, V3 |
+
+You can also find tags that reference a commit or version number.
+
 ## Executing your own scripts
 
 If you have a need to do additional stuff when the container starts or stops, you can mount your script with `-v /docker/host/my-script.sh:/etc/cont-init.d/99-my-script` to execute your script on container start or `-v /docker/host/my-script.sh:/etc/cont-finish.d/99-my-script` to execute it when the container stops. An example script can be seen below.
