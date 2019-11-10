@@ -4,11 +4,14 @@ ARG DEBIAN_FRONTEND="noninteractive"
 
 EXPOSE 8989
 
-# https://download.sonarr.tv/v2/master/mono/
-ARG SONARR_VERSION=2.0.0.5338
+# https://download.sonarr.tv/v3/phantom-develop/
+ARG SONARR_VERSION=3.0.3.654
 
 # install app
-RUN curl -fsSL "https://download.sonarr.tv/v2/master/mono/NzbDrone.master.${SONARR_VERSION}.mono.tar.gz" | tar xzf - -C "${APP_DIR}" --strip-components=1 && \
+RUN mkdir "${APP_DIR}/bin" && \
+    curl -fsSL "https://download.sonarr.tv/v3/phantom-develop/${SONARR_VERSION}/Sonarr.phantom-develop.${SONARR_VERSION}.linux.tar.gz" | tar xzf - -C "${APP_DIR}/bin" --strip-components=1 && \
+    rm -rf "${APP_DIR}/bin/Sonarr.Update" && \
+    echo "PackageVersion=${SONARR_VERSION}\nPackageAuthor=hotio\nReleaseVersion=${SONARR_VERSION}\nUpdateMethod=Docker\nBranch=phantom-develop" > "${APP_DIR}/package_info" && \
     chmod -R u=rwX,go=rX "${APP_DIR}"
 
 COPY root/ /
