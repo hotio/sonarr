@@ -31,6 +31,16 @@ VERSION=https://download.sonarr.tv/v2/master/mono/NzbDrone.master.2.0.0.5228.mon
 VERSION=file:///config/NzbDrone.master.2.0.0.5228.mono.tar.gz
 ```
 
+## Tags
+
+| Tag     | Description          |
+| --------|----------------------|
+| latest  | Stable version, V2   |
+| master  | Stable version, V2   |
+| phantom | Unstable version, V3 |
+
+You can also find tags that reference a commit or version number.
+
 ## Executing your own scripts
 
 If you have a need to do additional stuff when the container starts or stops, you can mount your script with `-v /docker/host/my-script.sh:/etc/cont-init.d/99-my-script` to execute your script on container start or `-v /docker/host/my-script.sh:/etc/cont-finish.d/99-my-script` to execute it when the container stops. An example script can be seen below.
