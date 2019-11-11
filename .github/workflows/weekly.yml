@@ -1,7 +1,7 @@
 name: Weekly build
 on:
   schedule:
-    - cron:  '0 22 * * 5'
+    - cron:  '2 22 * * 5'
 
 jobs:
   update-master:
