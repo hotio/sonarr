@@ -24,8 +24,8 @@ The environment variables below are all optional, the values you see are the def
 
 | Tag      | Description          |
 | ---------|----------------------|
-| latest   | Stable version, V2   |
-| master   | Stable version, V2   |
+| latest   | The same as `stable` |
+| stable   | Stable version, V2   |
 | unstable | Unstable version, V2 |
 | phantom  | Unstable version, V3 |
 
