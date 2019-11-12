@@ -1,6 +1,0 @@
-#!/usr/bin/with-contenv bash
-# shellcheck shell=bash
-
-umask "${UMASK}"
-
-exec s6-setuidgid hotio mono --debug "${APP_DIR}/NzbDrone.exe" --nobrowser --data="${CONFIG_DIR}/app" > /dev/null 2>&1
