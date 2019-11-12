@@ -23,7 +23,7 @@ jobs:
         git add .weekly-build
         git commit -m "Weekly build"
     - name: Push changes
-      uses: ad-m/github-push-action@master
+      uses: ad-m/github-push-action@v0.5.0
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
         branch: ${{ matrix.branch }}
