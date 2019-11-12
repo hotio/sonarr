@@ -4,10 +4,15 @@ on:
     - cron:  '17,47 * * * *'
 
 jobs:
-  update-master:
+  update:
     runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        branch: [stable, unstable, phantom]
     steps:
     - uses: actions/checkout@master
+      with:
+        ref: ${{ matrix.branch }}
     - name: Configure git
       run: |
         git config --local user.email "action@github.com"
@@ -19,41 +24,4 @@ jobs:
       uses: ad-m/github-push-action@master
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
-
-  update-unstable:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-      with:
-        ref: unstable
-    - name: Configure git
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-    - name: Update version and commit changes
-      run: |
-        bash update.sh
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: unstable
-
-  update-phantom:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@master
-      with:
-        ref: phantom
-    - name: Configure git
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-    - name: Update version and commit changes
-      run: |
-        bash update.sh
-    - name: Push changes
-      uses: ad-m/github-push-action@master
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        branch: phantom
+        branch: ${{ matrix.branch }}
