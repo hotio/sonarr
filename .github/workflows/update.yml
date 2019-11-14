@@ -13,15 +13,14 @@ jobs:
     - uses: actions/checkout@master
       with:
         ref: ${{ matrix.branch }}
-    - name: Configure git
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-    - name: Update version and commit changes
+    - name: Update files
       run: |
         bash update.sh
-    - name: Push changes
-      uses: ad-m/github-push-action@v0.5.0
+      id: update_files
+    - name: Commit and push changes
+      uses: stefanzweifel/git-auto-commit-action@v2.3.0
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        commit_message: ${{ format('Updated to version - {0}', steps.update_files.outputs.version) }}
         branch: ${{ matrix.branch }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
