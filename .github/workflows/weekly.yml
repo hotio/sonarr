@@ -13,17 +13,16 @@ jobs:
     - uses: actions/checkout@master
       with:
         ref: ${{ matrix.branch }}
-    - name: Configure git
+    - name: Update files
       run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-    - name: Update .weekly-build file and commit changes
-      run: |
-        date > .weekly-build
-        git add .weekly-build
-        git commit -m "Weekly build"
-    - name: Push changes
-      uses: ad-m/github-push-action@v0.5.0
+        stamp=$(date)
+        echo "${stamp}" > .weekly-build
+        echo "##[set-output name=stamp;]${stamp}"
+      id: update_files
+    - name: Commit and push changes
+      uses: stefanzweifel/git-auto-commit-action@v2.3.0
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        commit_message: ${{ format('Weekly build - {0}', steps.update_files.outputs.stamp) }}
         branch: ${{ matrix.branch }}
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

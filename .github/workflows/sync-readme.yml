@@ -1,5 +1,8 @@
 name: Sync README
-on: push
+on:
+  push:
+    paths:
+    - 'README.md'
 
 jobs:
   update:
