@@ -64,7 +64,7 @@ steps:
   image: ${DRONE_REPO_OWNER}/base
   pull: always
   commands:
-    - sleep 15
+    - sleep 60
     - curl -fsSL service:8989
 
 services:
@@ -125,7 +125,7 @@ steps:
   image: ${DRONE_REPO_OWNER}/base
   pull: always
   commands:
-    - sleep 15
+    - sleep 60
     - curl -fsSL service:8989
 
 services:
@@ -186,7 +186,7 @@ steps:
   image: ${DRONE_REPO_OWNER}/base
   pull: always
   commands:
-    - sleep 15
+    - sleep 60
     - curl -fsSL service:8989
 
 services:
