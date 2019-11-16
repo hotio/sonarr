@@ -46,6 +46,37 @@ depends_on:
 
 ---
 kind: pipeline
+name: linux-amd64-test
+
+clone:
+  disable: true
+
+platform:
+  os: linux
+  arch: amd64
+
+trigger:
+  event:
+    - push
+
+steps:
+- name: test
+  image: ${DRONE_REPO_OWNER}/base
+  pull: always
+  commands:
+    - sleep 60
+    - curl -fsSL service:8989
+
+services:
+- name: service
+  image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+  pull: always
+
+depends_on:
+  - linux-amd64
+
+---
+kind: pipeline
 name: linux-arm64
 
 platform:
@@ -73,6 +104,37 @@ steps:
 
 depends_on:
   - checks
+
+---
+kind: pipeline
+name: linux-arm64-test
+
+clone:
+  disable: true
+
+platform:
+  os: linux
+  arch: arm64
+
+trigger:
+  event:
+    - push
+
+steps:
+- name: test
+  image: ${DRONE_REPO_OWNER}/base
+  pull: always
+  commands:
+    - sleep 60
+    - curl -fsSL service:8989
+
+services:
+- name: service
+  image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+  pull: always
+
+depends_on:
+  - linux-arm64
 
 ---
 kind: pipeline
@@ -106,7 +168,41 @@ depends_on:
 
 ---
 kind: pipeline
+name: linux-arm-test
+
+clone:
+  disable: true
+
+platform:
+  os: linux
+  arch: arm
+
+trigger:
+  event:
+    - push
+
+steps:
+- name: test
+  image: ${DRONE_REPO_OWNER}/base
+  pull: always
+  commands:
+    - sleep 60
+    - curl -fsSL service:8989
+
+services:
+- name: service
+  image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+  pull: always
+
+depends_on:
+  - linux-arm
+
+---
+kind: pipeline
 name: manifest
+
+clone:
+  disable: true
 
 trigger:
   event:
@@ -181,6 +277,6 @@ steps:
       - linux/arm64
 
 depends_on:
-  - linux-amd64
-  - linux-arm64
-  - linux-arm
+  - linux-amd64-test
+  - linux-arm64-test
+  - linux-arm-test
