@@ -301,7 +301,8 @@ steps:
       from_secret: discord_id
     webhook_token:
       from_secret: discord_token
-    message: "{{#success build.status}} ✅  Build [#{{build.number}}]({{build.link}}) of `{{repo.namespace}}/{{repo.name}}` succeeded.\n\nCommit [{{truncate commit.sha 7}}]({{commit.link}}) by {{commit.author}} on `{{commit.branch}}`:\n``` {{commit.message}} ``` {{else}} ❌  Build [#{{build.number}}]({{build.link}}) of `{{repo.namespace}}/{{repo.name}}` failed.\n\nCommit [{{truncate commit.sha 7}}]({{commit.link}}) by {{commit.author}} on `{{commit.branch}}`:\n``` {{commit.message}} ``` {{/success}}\n"
+    message: "{{#success build.status}} ✅  Build #{{build.number}} of `{{repo.namespace}}/{{repo.name}}:{{commit.branch}}` succeeded.\n\nCommit `{{truncate commit.sha 7}}` by {{commit.author}}:\n``` {{commit.message}} ``` {{else}} ❌  Build #{{build.number}} of `{{repo.namespace}}/{{repo.name}}:{{commit.branch}}` failed.\n\nCommit `{{truncate commit.sha 7}}` by {{commit.author}}:\n``` {{commit.message}} ``` {{/success}}\n"
+    color: 738ad6
 
 depends_on:
   - manifest
