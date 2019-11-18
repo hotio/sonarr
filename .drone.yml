@@ -285,9 +285,6 @@ depends_on:
 kind: pipeline
 name: discord
 
-clone:
-  disable: true
-
 trigger:
   status:
   - success
@@ -301,6 +298,7 @@ steps:
       from_secret: discord_id
     webhook_token:
       from_secret: discord_token
+    message: "{{#success build.status}} ✅  Build [#{{build.number}}]({{ build.link }}) of `{{repo.name}}` succeeded.\n\nCommit by {{commit.author}} on `{{commit.branch}}`:\n``` {{commit.message}} ``` {{else}} ❌  Build [#{{build.number}}]({{ build.link }}) of `{{repo.name}}` failed.\n\nCommit by {{commit.author}} on `{{commit.branch}}`:\n``` {{commit.message}} ``` {{/success}}\n"
 
 depends_on:
   - manifest
