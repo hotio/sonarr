@@ -280,3 +280,26 @@ depends_on:
   - linux-amd64-test
   - linux-arm64-test
   - linux-arm-test
+
+---
+kind: pipeline
+name: discord
+
+clone:
+  disable: true
+
+trigger:
+  event:
+    - push
+
+steps:
+- name: notification
+  image: appleboy/drone-discord
+  settings:
+    webhook_id:
+      from_secret: discord_id
+    webhook_token:
+      from_secret: discord_token
+
+depends_on:
+  - manifest
