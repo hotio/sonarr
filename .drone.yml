@@ -299,6 +299,7 @@ steps:
       from_secret: discord_id
     DISCORD_TOKEN:
       from_secret: discord_token
+    VERSION: ${TAG_VERSION=3.0.3.655}
   commands:
     - bash discord.sh
 
