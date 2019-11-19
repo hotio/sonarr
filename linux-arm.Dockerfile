@@ -5,7 +5,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 EXPOSE 8989
 
 # https://download.sonarr.tv/v3/phantom-develop/
-ARG SONARR_VERSION=3.0.3.655
+ARG SONARR_VERSION=3.0.3.657
 
 # install app
 RUN mkdir "${APP_DIR}/bin" && \
