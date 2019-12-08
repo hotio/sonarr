@@ -283,7 +283,7 @@ depends_on:
 
 ---
 kind: pipeline
-name: discord
+name: notify
 
 trigger:
   status:
@@ -291,7 +291,22 @@ trigger:
   - failure
 
 steps:
-- name: notification
+- name: screenshot
+  image: zenika/alpine-chrome:with-puppeteer
+  pull: always
+  user: root
+  commands:
+    - apk add --no-cache curl@edge bind-tools@edge sed@edge
+    - sed -i -e "s/service/$(dig +short service)/g" puppeteer.js
+    - sleep 50
+    - mv puppeteer.js /usr/src/app/src/puppeteer.js && cd /usr/src/app && node src/puppeteer.js
+    - curl -fsSL -F'file=@/tmp/screenshot.png' https://0x0.st > /drone/src/screenshot.log
+  when:
+    status:
+    - success
+  failure: ignore
+
+- name: discord
   image: ${DRONE_REPO_OWNER}/base
   pull: always
   environment:
@@ -299,42 +314,18 @@ steps:
       from_secret: discord_id
     DISCORD_TOKEN:
       from_secret: discord_token
-    VERSION: ${TAG_VERSION=3.0.3.664}
+    VERSION_FIELD: ${TAG_VERSION=3.0.3.664}
   commands:
-    - bash discord.sh
-
-depends_on:
-  - manifest
-
----
-kind: pipeline
-name: screenshot
-
-platform:
-  os: linux
-  arch: amd64
-
-trigger:
-  event:
-    - push
-
-steps:
-- name: screenshot
-  image: zenika/alpine-chrome:with-puppeteer
-  pull: always
-  user: root
-  commands:
-    - apk add --no-cache curl@edge
-    - sleep 50
-    - mv puppeteer.js /usr/src/app/src/puppeteer.js && cd /usr/src/app && node src/puppeteer.js
-    - curl -fsSL -F'file=@/tmp/screenshot.png' https://0x0.st
+    - curl -fsSL https://gist.githubusercontent.com/hotio/d490b6447ddde9634475ddacbc85d8c1/raw/discord-build-notify.sh > discord-build-notify.sh
+    - bash discord-build-notify.sh
 
 services:
 - name: service
   image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
   pull: always
+  when:
+    status:
+    - success
 
 depends_on:
-  - linux-amd64-test
-  - linux-arm64-test
-  - linux-arm-test
+  - manifest
