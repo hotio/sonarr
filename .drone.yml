@@ -297,8 +297,8 @@ steps:
   user: root
   commands:
     - apk add --no-cache curl@edge bind-tools@edge sed@edge
-    - sed -i -e "s/service/$(dig +short service)/g" puppeteer.js
     - sleep 50
+    - sed -i -e "s/service/$(dig +short service)/g" puppeteer.js
     - mv puppeteer.js /usr/src/app/src/puppeteer.js && cd /usr/src/app && node src/puppeteer.js
     - curl -fsSL -F'file=@/tmp/screenshot.png' https://0x0.st > /drone/src/screenshot.log
   when:
