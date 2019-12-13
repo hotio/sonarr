@@ -71,6 +71,8 @@ services:
 - name: service
   image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
   pull: always
+  environment:
+    DEBUG: yes
 
 depends_on:
   - linux-amd64
@@ -132,6 +134,8 @@ services:
 - name: service
   image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
   pull: always
+  environment:
+    DEBUG: yes
 
 depends_on:
   - linux-arm64
@@ -193,6 +197,8 @@ services:
 - name: service
   image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
   pull: always
+  environment:
+    DEBUG: yes
 
 depends_on:
   - linux-arm
@@ -324,6 +330,8 @@ services:
 - name: service
   image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
   pull: always
+  environment:
+    DEBUG: yes
   when:
     status:
     - success

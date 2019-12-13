@@ -3,4 +3,12 @@
 
 umask "${UMASK}"
 
-exec s6-setuidgid hotio mono --debug "${APP_DIR}/bin/Sonarr.exe" --nobrowser --data="${CONFIG_DIR}/app" > /dev/null 2>&1
+redirect_cmd() {
+    if [[ "${DEBUG}" == "yes" ]]; then
+        "$@"
+    else
+        "$@" > /dev/null 2>&1
+    fi
+}
+
+redirect_cmd exec s6-setuidgid hotio mono --debug "${APP_DIR}/bin/Sonarr.exe" --nobrowser --data="${CONFIG_DIR}/app"
