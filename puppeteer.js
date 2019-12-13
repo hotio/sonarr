@@ -13,8 +13,8 @@ const puppeteer = require("puppeteer");
     ]
   });
   const page = await browser.newPage();
-  await page.setViewport({ width: 1920, height: 2000 });
+  await page.setViewport({ width: 1920, height: 1080 });
   await page.goto("http://service:8989/system/status", { waitUntil: "networkidle2" });
-  await page.screenshot({ path: "/tmp/screenshot.png" });
+  await page.screenshot({ path: "/tmp/screenshot.png", fullPage: true });
   await browser.close();
 })();
