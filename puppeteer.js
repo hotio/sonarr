@@ -15,6 +15,12 @@ const puppeteer = require("puppeteer");
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   await page.goto("http://service:8989/system/status", { waitUntil: "networkidle2" });
+  await page.evaluate(() => {
+    const div = document.createElement('div');
+    div.innerHTML = 'WATERMARK';
+    div.style.cssText = "padding: 5px; color: white; position: fixed; bottom: 10px; right: 10px; background: green; z-index: 10000";
+    document.body.appendChild(div);
+  });
   await page.screenshot({ path: "/tmp/screenshot.png", fullPage: true });
   await browser.close();
 })();

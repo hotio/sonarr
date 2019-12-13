@@ -306,6 +306,7 @@ steps:
     - currenttime=$(date +%s); maxtime=$(($currenttime+60)); while (! curl -fsSL service:8989 > /dev/null) && [ $currenttime -lt $maxtime ]; do sleep 1; currenttime=$(date +%s); done
     - curl -fsSL service:8989 > /dev/null
     - sed -i -e "s/service/$(dig +short service)/g" puppeteer.js
+    - sed -i -e "s#WATERMARK#Image:\ ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}, Commit:\ ${DRONE_COMMIT_SHA:0:7}, Build:\ ${DRONE_BUILD_NUMBER}#g" puppeteer.js
     - mv puppeteer.js /usr/src/app/src/puppeteer.js && cd /usr/src/app && node src/puppeteer.js
     - curl -fsSL -F'file=@/tmp/screenshot.png' https://0x0.st > /drone/src/screenshot.log
   when:
