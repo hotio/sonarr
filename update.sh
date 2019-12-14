@@ -31,7 +31,6 @@ const puppeteer = require('puppeteer');
   await browser.close();
 })();
 EOF
-    curl -fsSL -F'file=@/drone/src/screenshot.png' https://0x0.st > "/drone/src/screenshot.log"
 elif [[ ${1} == "checkservice" ]]; then
     SERVICE="http://service:8989"
     currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL ${SERVICE} > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
