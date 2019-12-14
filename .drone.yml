@@ -48,9 +48,6 @@ depends_on:
 kind: pipeline
 name: linux-amd64-test
 
-clone:
-  disable: true
-
 platform:
   os: linux
   arch: amd64
@@ -64,8 +61,7 @@ steps:
   image: ${DRONE_REPO_OWNER}/base
   pull: always
   commands:
-    - currenttime=$(date +%s); maxtime=$(($currenttime+60)); while (! curl -fsSL service:8989 > /dev/null) && [ $currenttime -lt $maxtime ]; do sleep 1; currenttime=$(date +%s); done
-    - curl -fsSL service:8989 > /dev/null
+    - bash update.sh checkservice
 
 services:
 - name: service
@@ -111,9 +107,6 @@ depends_on:
 kind: pipeline
 name: linux-arm64-test
 
-clone:
-  disable: true
-
 platform:
   os: linux
   arch: arm64
@@ -127,8 +120,7 @@ steps:
   image: ${DRONE_REPO_OWNER}/base
   pull: always
   commands:
-    - currenttime=$(date +%s); maxtime=$(($currenttime+60)); while (! curl -fsSL service:8989 > /dev/null) && [ $currenttime -lt $maxtime ]; do sleep 1; currenttime=$(date +%s); done
-    - curl -fsSL service:8989 > /dev/null
+    - bash update.sh checkservice
 
 services:
 - name: service
@@ -174,9 +166,6 @@ depends_on:
 kind: pipeline
 name: linux-arm-test
 
-clone:
-  disable: true
-
 platform:
   os: linux
   arch: arm
@@ -190,8 +179,7 @@ steps:
   image: ${DRONE_REPO_OWNER}/base
   pull: always
   commands:
-    - currenttime=$(date +%s); maxtime=$(($currenttime+60)); while (! curl -fsSL service:8989 > /dev/null) && [ $currenttime -lt $maxtime ]; do sleep 1; currenttime=$(date +%s); done
-    - curl -fsSL service:8989 > /dev/null
+    - bash update.sh checkservice
 
 services:
 - name: service
@@ -302,16 +290,9 @@ steps:
   pull: always
   user: root
   commands:
-    - apk add --no-cache curl@edge bind-tools@edge sed@edge
-    - currenttime=$(date +%s); maxtime=$(($currenttime+60)); while (! curl -fsSL service:8989 > /dev/null) && [ $currenttime -lt $maxtime ]; do sleep 1; currenttime=$(date +%s); done
-    - curl -fsSL service:8989 > /dev/null
-    - sed -i -e "s/service/$(dig +short service)/g" puppeteer.js
-    - sed -i -e "s#WATERMARK#Image:\ ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}, Commit:\ ${DRONE_COMMIT_SHA:0:7}, Build:\ ${DRONE_BUILD_NUMBER}#g" puppeteer.js
-    - mv puppeteer.js /usr/src/app/src/puppeteer.js && cd /usr/src/app && node src/puppeteer.js
-    - curl -fsSL -F'file=@/tmp/screenshot.png' https://0x0.st > /drone/src/screenshot.log
-  when:
-    status:
-    - success
+    - apk add --no-cache curl@edge bind-tools@edge bash@edge coreutils@edge
+    - bash update.sh checkservice
+    - bash update.sh screenshot
   failure: ignore
 
 - name: discord
@@ -333,9 +314,6 @@ services:
   pull: always
   environment:
     DEBUG: yes
-  when:
-    status:
-    - success
 
 depends_on:
   - manifest
