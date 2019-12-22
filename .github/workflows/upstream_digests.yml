@@ -1,4 +1,4 @@
-name: Upstream packages check
+name: Upstream digests check
 on:
   schedule:
     - cron:  '10 * * * *'
@@ -13,13 +13,13 @@ jobs:
     - uses: actions/checkout@master
       with:
         ref: ${{ matrix.branch }}
-    - name: Check for updated packages
+    - name: Check for updated digests
       run: |
-        bash update.sh checkpackages
+        bash update.sh checkdigests
     - name: Commit and push changes
       uses: stefanzweifel/git-auto-commit-action@v2.5.0
       with:
-        commit_message: Upstream packages have been updated
+        commit_message: Upstream digests have changed
         branch: ${{ matrix.branch }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
