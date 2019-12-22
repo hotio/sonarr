@@ -1,7 +1,7 @@
-name: Version check
+name: Upstream packages check
 on:
   schedule:
-    - cron:  '17,47 * * * *'
+    - cron:  '10 * * * *'
 
 jobs:
   update:
@@ -13,14 +13,13 @@ jobs:
     - uses: actions/checkout@master
       with:
         ref: ${{ matrix.branch }}
-    - name: Update files
+    - name: Check for updated packages
       run: |
-        bash update.sh
-      id: update_files
+        bash update.sh checkpackages
     - name: Commit and push changes
       uses: stefanzweifel/git-auto-commit-action@v2.5.0
       with:
-        commit_message: ${{ format('Updated to version - {0}', steps.update_files.outputs.version) }}
+        commit_message: Upstream packages have been updated
         branch: ${{ matrix.branch }}
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
