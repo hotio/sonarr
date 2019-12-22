@@ -35,11 +35,13 @@ elif [[ ${1} == "checkservice" ]]; then
     SERVICE="http://service:8989"
     currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL ${SERVICE} > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
     curl -fsSL ${SERVICE} > /dev/null
-elif [[ ${1} == "checkpackages" ]]; then
-    docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-    docker run --rm -v "${GITHUB_WORKSPACE}":/github -t hotio/mono:stable-linux-arm64 bash -c 'apt list --installed > /github/upstream_packages.arm64.txt'
-    docker run --rm -v "${GITHUB_WORKSPACE}":/github -t hotio/mono:stable-linux-arm   bash -c 'apt list --installed > /github/upstream_packages.arm.txt'
-    docker run --rm -v "${GITHUB_WORKSPACE}":/github -t hotio/mono:stable-linux-amd64 bash -c 'apt list --installed > /github/upstream_packages.amd64.txt'
+elif [[ ${1} == "checkdigests" ]]; then
+    docker pull hotio/mono:stable-linux-arm64
+    docker pull hotio/mono:stable-linux-arm
+    docker pull hotio/mono:stable-linux-amd64
+    docker inspect --format='{{index .RepoDigests 0}}' hotio/mono:stable-linux-arm64 >  upstream_digests.txt
+    docker inspect --format='{{index .RepoDigests 0}}' hotio/mono:stable-linux-arm   >> upstream_digests.txt
+    docker inspect --format='{{index .RepoDigests 0}}' hotio/mono:stable-linux-amd64 >> upstream_digests.txt
 else
     version=$(curl -fsSL "https://services.sonarr.tv/v1/download/phantom-develop?version=3" | jq -r .version)
     [[ -z ${version} ]] && exit
