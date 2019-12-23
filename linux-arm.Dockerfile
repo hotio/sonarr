@@ -1,4 +1,4 @@
-FROM hotio/mono
+FROM hotio/mono:stable-linux-arm
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
