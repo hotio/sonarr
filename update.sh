@@ -36,12 +36,9 @@ elif [[ ${1} == "checkservice" ]]; then
     currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL ${SERVICE} > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
     curl -fsSL ${SERVICE} > /dev/null
 elif [[ ${1} == "checkdigests" ]]; then
-    docker pull hotio/mono:stable-linux-arm64
-    docker pull hotio/mono:stable-linux-arm
-    docker pull hotio/mono:stable-linux-amd64
-    docker inspect --format='{{index .RepoDigests 0}}' hotio/mono:stable-linux-arm64 >  upstream_digests.txt
-    docker inspect --format='{{index .RepoDigests 0}}' hotio/mono:stable-linux-arm   >> upstream_digests.txt
-    docker inspect --format='{{index .RepoDigests 0}}' hotio/mono:stable-linux-amd64 >> upstream_digests.txt
+    image="hotio/mono:stable-linux-amd64" && docker pull ${image} && digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image}) && sed -i "s#FROM .*\$#FROM ${digest}#g" ./linux-amd64.Dockerfile
+    image="hotio/mono:stable-linux-arm"   && docker pull ${image} && digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image}) && sed -i "s#FROM .*\$#FROM ${digest}#g" ./linux-arm.Dockerfile
+    image="hotio/mono:stable-linux-arm64" && docker pull ${image} && digest=$(docker inspect --format='{{index .RepoDigests 0}}' ${image}) && sed -i "s#FROM .*\$#FROM ${digest}#g" ./linux-arm64.Dockerfile
 else
     version=$(curl -fsSL "https://services.sonarr.tv/v1/download/phantom-develop?version=3" | jq -r .version)
     [[ -z ${version} ]] && exit
