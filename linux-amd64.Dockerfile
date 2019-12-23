@@ -1,4 +1,4 @@
-FROM hotio/mono:stable-linux-amd64
+FROM hotio/mono@sha256:ac29d2fd6d24174b516bc7d612e80d4d00b46146bbbb1932197467be87e60f80
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
