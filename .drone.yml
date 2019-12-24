@@ -40,7 +40,6 @@ steps:
     dockerfile: ${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}.Dockerfile
     tags:
       - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
-      - ${DRONE_COMMIT_BRANCH}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
 depends_on:
   - checks
@@ -100,7 +99,6 @@ steps:
     dockerfile: ${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}.Dockerfile
     tags:
       - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
-      - ${DRONE_COMMIT_BRANCH}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
 depends_on:
   - checks
@@ -160,7 +158,6 @@ steps:
     dockerfile: ${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}.Dockerfile
     tags:
       - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
-      - ${DRONE_COMMIT_BRANCH}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
 
 depends_on:
   - checks
