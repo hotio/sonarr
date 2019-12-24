@@ -46,7 +46,7 @@ elif [[ ${1} == "checkdigests" ]]; then
     digest=$(echo "${manifest}" | jq -r '.manifests[] | select (.platform.architecture == "arm64" and .platform.os == "linux").digest') && sed -i "s#FROM .*\$#FROM ${image}@${digest}#g" ./linux-arm64.Dockerfile && echo "${digest}"
 else
     version=$(curl -fsSL "https://services.sonarr.tv/v1/download/master" | jq -r .version)
-    [[ -z ${version} ]] && exit
+    [[ -z ${version} ]] && exit 1
     find . -type f -name '*.Dockerfile' -exec sed -i "s/ARG SONARR_VERSION=.*$/ARG SONARR_VERSION=${version}/g" {} \;
     sed -i "s/{TAG_VERSION=.*}$/{TAG_VERSION=${version}}/g" .drone.yml
     echo "##[set-output name=version;]${version}"
