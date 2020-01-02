@@ -57,8 +57,13 @@ trigger:
     - push
 
 steps:
+- name: list-packages
+  image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+  pull: always
+  commands:
+    - apt list --installed
 - name: test
-  image: ${DRONE_REPO_OWNER}/base
+  image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
   pull: always
   commands:
     - bash update.sh checkservice
@@ -116,8 +121,13 @@ trigger:
     - push
 
 steps:
+- name: list-packages
+  image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+  pull: always
+  commands:
+    - apt list --installed
 - name: test
-  image: ${DRONE_REPO_OWNER}/base
+  image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
   pull: always
   commands:
     - bash update.sh checkservice
@@ -175,8 +185,13 @@ trigger:
     - push
 
 steps:
+- name: list-packages
+  image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
+  pull: always
+  commands:
+    - apt list --installed
 - name: test
-  image: ${DRONE_REPO_OWNER}/base
+  image: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
   pull: always
   commands:
     - bash update.sh checkservice
