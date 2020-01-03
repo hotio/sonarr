@@ -11,4 +11,5 @@ redirect_cmd() {
     fi
 }
 
-redirect_cmd exec s6-setuidgid hotio mono --debug "${APP_DIR}/NzbDrone.exe" --nobrowser --data="${CONFIG_DIR}/app"
+# shellcheck disable=SC2086
+redirect_cmd exec s6-setuidgid hotio mono --debug "${APP_DIR}/NzbDrone.exe" --nobrowser --data="${CONFIG_DIR}/app" ${ARGS}
