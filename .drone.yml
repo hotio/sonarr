@@ -305,7 +305,7 @@ steps:
   pull: always
   user: root
   commands:
-    - apk add --no-cache curl@edge bind-tools@edge bash@edge coreutils@edge
+    - apk add --no-cache curl@edge iputils@edge bash@edge coreutils@edge
     - bash update.sh checkservice
     - bash update.sh screenshot
   failure: ignore
