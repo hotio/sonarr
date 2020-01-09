@@ -225,7 +225,7 @@ steps:
   image: plugins/manifest
   pull: always
   settings:
-    ignore_missing: true
+    ignore_missing: false
     username:
       from_secret: docker_username
     password:
@@ -241,7 +241,7 @@ steps:
   image: plugins/manifest
   pull: always
   settings:
-    ignore_missing: true
+    ignore_missing: false
     username:
       from_secret: docker_username
     password:
@@ -257,7 +257,7 @@ steps:
   image: plugins/manifest
   pull: always
   settings:
-    ignore_missing: true
+    ignore_missing: false
     username:
       from_secret: docker_username
     password:
@@ -273,7 +273,7 @@ steps:
   image: plugins/manifest
   pull: always
   settings:
-    ignore_missing: true
+    ignore_missing: false
     username:
       from_secret: docker_username
     password:
