@@ -13,6 +13,7 @@ UMASK=${UMASK}
 TZ=${TZ}
 ARGS=${ARGS}
 DEBUG=${DEBUG}
+UNPACKERR=${UNPACKERR}
 ----------------------------------------------------------------------
 "
 

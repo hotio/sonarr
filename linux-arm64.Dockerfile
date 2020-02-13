@@ -2,7 +2,14 @@ FROM hotio/mono@sha256:84003130c73165abb591acf2b16c8b6213868449c43fdbd9868e2f5e5
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
+ENV UNPACKERR="disabled"
+
 EXPOSE 8989
+
+ARG UNPACKERR_VERSION=0.7.0-beta1
+
+# install unpackerr
+RUN curl -fsSL "https://github.com/davidnewhall/unpackerr/releases/download/v${UNPACKERR_VERSION}/unpackerr.arm64.linux.gz" | gunzip | dd of=/usr/local/bin/unpackerr && chmod 755 /usr/local/bin/unpackerr
 
 ARG SONARR_VERSION=3.0.3.698
 

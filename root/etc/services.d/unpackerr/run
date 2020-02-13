@@ -1,0 +1,23 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+umask "${UMASK}"
+
+while [[ ! -f "${CONFIG_DIR}/app/config.xml" ]] || [[ ${UNPACKERR} == "disabled" ]]; do
+    sleep 10
+done
+
+UN_SONARR_0_URL="http://localhost:8989"                                                                              && export UN_SONARR_0_URL
+UN_SONARR_0_API_KEY="$(grep -o '<ApiKey>.*</ApiKey>' < "${CONFIG_DIR}/app/config.xml" | sed -e 's/<\/\?ApiKey>//g')" && export UN_SONARR_0_API_KEY
+
+[[ ! -f "${CONFIG_DIR}/unpackerr.log" ]] && touch "${CONFIG_DIR}/unpackerr.log" && chown hotio:hotio "${CONFIG_DIR}/unpackerr.log"
+
+redirect_cmd() {
+    if [[ "${DEBUG}" == "yes" ]]; then
+        "$@" 2>&1 | tee -a "${CONFIG_DIR}/unpackerr.log"
+    else
+        "$@" >> "${CONFIG_DIR}/unpackerr.log" 2>&1
+    fi
+}
+
+redirect_cmd exec s6-setuidgid hotio "/usr/local/bin/unpackerr"
