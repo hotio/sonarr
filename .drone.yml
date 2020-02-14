@@ -12,7 +12,7 @@ steps:
   pull: always
   commands:
     - shellcheck --version
-    - for file in $(find ./root -type f ! -iname "*.conf"); do echo $file; shellcheck $file; done;
+    - for file in $(find ./root -type f); do echo $file; shellcheck $file; done;
 
 ---
 kind: pipeline
