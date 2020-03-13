@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 
 EXPOSE 8989
 
-ARG SONARR_VERSION=2.0.0.5337
+ARG SONARR_VERSION=2.0.0.5343
 
 # install app
 RUN curl -fsSL "https://download.sonarr.tv/v2/develop/mono/NzbDrone.develop.${SONARR_VERSION}.mono.tar.gz" | tar xzf - -C "${APP_DIR}" --strip-components=1 && \
