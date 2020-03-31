@@ -4,7 +4,7 @@ ARG DEBIAN_FRONTEND="noninteractive"
 
 EXPOSE 8989
 
-ARG SONARR_VERSION=3.0.3.749
+ARG SONARR_VERSION=3.0.3.750
 
 # install app
 RUN mkdir "${APP_DIR}/bin" && \
