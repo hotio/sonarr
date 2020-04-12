@@ -41,7 +41,7 @@ steps:
     tags:
       - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     build_args:
-      - SONARR_VERSION=${SONARR_VERSION=3.0.3.750}
+      - SONARR_VERSION=${SONARR_VERSION=3.0.3.754}
       - PACKAGE_VERSION=${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}
 
 depends_on:
@@ -108,7 +108,7 @@ steps:
     tags:
       - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     build_args:
-      - SONARR_VERSION=${SONARR_VERSION=3.0.3.750}
+      - SONARR_VERSION=${SONARR_VERSION=3.0.3.754}
       - PACKAGE_VERSION=${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}
 
 depends_on:
@@ -175,7 +175,7 @@ steps:
     tags:
       - ${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-${DRONE_STAGE_OS}-${DRONE_STAGE_ARCH}
     build_args:
-      - SONARR_VERSION=${SONARR_VERSION=3.0.3.750}
+      - SONARR_VERSION=${SONARR_VERSION=3.0.3.754}
       - PACKAGE_VERSION=${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}
 
 depends_on:
@@ -287,7 +287,7 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-    target: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${SONARR_VERSION=3.0.3.750}
+    target: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${SONARR_VERSION=3.0.3.754}
     template: ${DRONE_REPO_OWNER}/${DRONE_REPO_NAME##docker-}:${DRONE_COMMIT_BRANCH}-${DRONE_COMMIT_SHA:0:7}-${DRONE_BUILD_NUMBER}-OS-ARCH
     platforms:
       - linux/amd64
@@ -316,7 +316,7 @@ steps:
   pull: always
   user: root
   environment:
-    VERSION_FIELD: ${SONARR_VERSION=3.0.3.750}
+    VERSION_FIELD: ${SONARR_VERSION=3.0.3.754}
   commands:
     - apk add --no-cache curl@edge iputils@edge bash@edge coreutils@edge
     - bash update.sh checkservice
@@ -331,7 +331,7 @@ steps:
       from_secret: discord_id
     DISCORD_TOKEN:
       from_secret: discord_token
-    VERSION_FIELD: ${SONARR_VERSION=3.0.3.750}
+    VERSION_FIELD: ${SONARR_VERSION=3.0.3.754}
   commands:
     - curl -fsSL https://gist.githubusercontent.com/hotio/d490b6447ddde9634475ddacbc85d8c1/raw/discord-build-notify.sh > discord-build-notify.sh
     - bash discord-build-notify.sh
