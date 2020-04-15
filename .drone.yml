@@ -315,7 +315,7 @@ steps:
   environment:
     VERSION_FIELD: ${SONARR_VERSION=2.0.0.5344}
   commands:
-    - apk add --no-cache curl@edge iputils@edge bash@edge coreutils@edge
+    - apk add --no-cache curl iputils bash coreutils
     - bash update.sh checkservice
     - bash update.sh screenshot
   failure: ignore
