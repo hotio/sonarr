@@ -321,7 +321,7 @@ steps:
   failure: ignore
 
 - name: discord
-  image: ${DRONE_REPO_OWNER}/base
+  image: ${DRONE_REPO_OWNER}/base:focal
   pull: always
   environment:
     DISCORD_ID:
