@@ -1,6 +1,6 @@
 # sonarr
 
-<img src="https://raw.githubusercontent.com/hotio/unraid-templates/master/hotio/img/sonarr.png" alt="Logo" height="130" width="130">
+<img src="https://raw.githubusercontent.com/hotio/docker-sonarr/master/img/sonarr.png" alt="Logo" height="130" width="130">
 
 [![GitHub](https://img.shields.io/badge/source-github-lightgrey)](https://github.com/hotio/docker-sonarr)
 [![Docker Pulls](https://img.shields.io/docker/pulls/hotio/sonarr)](https://hub.docker.com/r/hotio/sonarr)
