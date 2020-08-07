@@ -58,13 +58,12 @@ jobs:
 
       - name: List installed packages
         run: |
-          docker run --rm --entrypoint="" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} \
-            apt list --installed
+          docker run --rm --entrypoint="" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} apt list --installed
 
       - name: Check if app works
         run: |
           docker run --network ci-network --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          docker run --network ci-network --rm --user root --entrypoint="" -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} apt update && apt install -y iputils-ping && bash update.sh checkservice
+          docker run --network ci-network --rm --user 0:0 --entrypoint="" -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} apt update && apt install -y iputils-ping && bash update.sh checkservice
           docker logs service
           docker stop service
   
