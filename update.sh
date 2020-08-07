@@ -1,9 +1,9 @@
 #!/bin/bash
 
 if [[ ${1} == "screenshot" ]]; then
-    SERVICE_IP="http://${ip_of_containers}:8989/system/status"
+    SERVICE_IP="http://${2}:8989/system/status"
     NETWORK_IDLE="2"
-    cd /usr/src/app && node <<EOF
+    node <<EOF
 const puppeteer = require('puppeteer');
 
 (async () => {
@@ -32,12 +32,12 @@ const puppeteer = require('puppeteer');
     div.style.cssText = "all: initial !important; border-radius: 4px !important; font-weight: normal !important; font-size: normal !important; font-family: monospace !important; padding: 10px !important; color: black !important; position: fixed !important; bottom: 10px !important; right: 10px !important; background-color: #e7f3fe !important; border-left: 6px solid #2196F3 !important; z-index: 10000 !important";
     document.body.appendChild(div);
   });
-  await page.screenshot({ path: "/usr/src/app/screenshot.png", fullPage: true });
+  await page.screenshot({ path: "screenshot.png", fullPage: true });
   await browser.close();
 })();
 EOF
 elif [[ ${1} == "checkservice" ]]; then
-    SERVICE="http://${ip_of_containers}:8989"
+    SERVICE="http://${2}:8989"
     currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${SERVICE}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
     curl -fsSL "${SERVICE}" > /dev/null
 elif [[ ${1} == "checkdigests" ]]; then
