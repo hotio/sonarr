@@ -66,8 +66,11 @@ jobs:
           docker run --rm --network host -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
           currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${app_url}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
           curl -fsSL "${app_url}" > /dev/null
+
+      - name: Show docker logs
+        if: always()
+        run: |
           docker logs service
-          docker stop service
   
   publish:
     runs-on: ubuntu-20.04
@@ -125,7 +128,6 @@ jobs:
           docker run --rm --network host -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
           currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${app_url}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
           docker run --rm --network host -u $(id -u $USER) -v ${GITHUB_WORKSPACE}:/usr/src/app zenika/alpine-chrome --no-sandbox --window-size=1920,1080 --screenshot --hide-scrollbars "${app_url}"
-          docker stop service
 
       - name: Send discord notification
         env:
