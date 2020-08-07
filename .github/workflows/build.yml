@@ -120,7 +120,7 @@ jobs:
       - name: Take screenshot
         run: |
           docker run --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
-          ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' service)
+          ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' service) && echo ${ip}
           docker run --rm -u root --entrypoint="" -e IP=${ip} -e VERSION_FIELD=${SONARR_VERSION=2.0.0.5343} -v "${GITHUB_WORKSPACE}":"/usr/src/app" --workdir "/usr/src/app" zenika/alpine-chrome:with-puppeteer apk add --no-cache curl iputils bash coreutils && bash update.sh checkservice && bash update.sh screenshot ; true
           docker logs service
           docker stop service
