@@ -1,9 +1,6 @@
 #!/bin/bash
 
-if [[ ${1} == "checkservice" ]]; then
-    currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${2}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
-    curl -fsSL "${2}" > /dev/null
-elif [[ ${1} == "checkdigests" ]]; then
+if [[ ${1} == "checkdigests" ]]; then
     mkdir ~/.docker && echo '{"experimental": "enabled"}' > ~/.docker/config.json
     image="hotio/mono"
     tag="eoan"

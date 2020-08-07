@@ -61,9 +61,10 @@ jobs:
 
       - name: Check if app works
         run: |
-          docker run --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          container_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' service)
-          docker run --rm --entrypoint="" -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} bash update.sh checkservice http://${container_ip}:8989/system/status
+          app_url="http://localhost:8989/system/status"
+          docker run --rm --network host -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+          currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${app_url}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
+          curl -fsSL "${app_url}" > /dev/null
           docker logs service
           docker stop service
   
@@ -119,9 +120,10 @@ jobs:
 
       - name: Take screenshot
         run: |
+          app_url="http://localhost:8989/system/status"
           docker run --rm --network host -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
-          currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "http://localhost:8989/system/status" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
-          docker run --rm --network host -u $(id -u $USER) -v ${GITHUB_WORKSPACE}:/usr/src/app zenika/alpine-chrome --no-sandbox --window-size=1920,1080 --screenshot --hide-scrollbars http://localhost:8989/system/status
+          currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${app_url}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
+          docker run --rm --network host -u $(id -u $USER) -v ${GITHUB_WORKSPACE}:/usr/src/app zenika/alpine-chrome --no-sandbox --window-size=1920,1080 --screenshot --hide-scrollbars "${app_url}"
           docker stop service
 
       - name: Send discord notification
