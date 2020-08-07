@@ -23,4 +23,4 @@ jobs:
         commit_message: ${{ format('Updated to version - {0}', steps.update_files.outputs.version) }}
         branch: ${{ matrix.branch }}
       env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
