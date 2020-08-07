@@ -1,0 +1,138 @@
+name: build
+
+on: push
+
+jobs:
+
+  build:
+    runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        architecture: [linux-arm-v7, linux-arm64, linux-amd64]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Shellcheck
+        run: |
+          shellcheck --version
+          if [[ -d ./root ]]; then
+            find "./root" -type f -exec shellcheck {} \;
+          else
+            true
+          fi
+
+      - name: Set up Docker Buildx
+        uses: crazy-max/ghaction-docker-buildx@v3
+
+      - name: Login to DockerHub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+
+      - name: Build images using buildx
+        run: |
+          ARCHITECTURE=${{ matrix.architecture }}
+          docker buildx build \
+            --cache-from "${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-cache-${ARCHITECTURE}" \
+            --cache-to "${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-cache-${ARCHITECTURE}" \
+            --platform ${ARCHITECTURE//-/\/} \
+            --output "type=image,push=true" \
+            --tag ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${ARCHITECTURE} \
+            --build-arg LABEL_CREATED="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
+            --build-arg LABEL_TITLE="${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}" \
+            --build-arg LABEL_REVISION="${GITHUB_SHA}" \
+            --build-arg LABEL_SOURCE="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GITHUB_REF//refs\/heads\//}" \
+            --build-arg LABEL_VENDOR="${GITHUB_REPOSITORY%/*}" \
+            --build-arg LABEL_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/master/README.md" \
+            --build-arg LABEL_VERSION="${SONARR_VERSION=2.0.0.5343}" \
+            --build-arg SONARR_VERSION="${SONARR_VERSION=2.0.0.5343}" \
+            --file ./${ARCHITECTURE}.Dockerfile ./
+
+      - name: Prepare for tests
+        run: |
+          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker network create -d bridge ci-network
+
+      - name: List installed packages
+        run: |
+          docker run --rm --entrypoint="" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} \
+            apt list --installed
+
+      - name: Check if app works
+        run: |
+          docker run --network ci-network --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+          docker run --network ci-network --rm --entrypoint="" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} \
+            bash update.sh checkservice
+          docker logs service
+          docker stop service
+  
+  publish:
+    runs-on: ubuntu-20.04
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Enable experimental
+        run: |
+          mkdir ~/.docker && echo '{"experimental": "enabled"}' > ~/.docker/config.json
+
+      - name: Login to DockerHub
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+
+      - name: Create docker manifest
+        run: |
+          docker manifest create ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//} \
+            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
+            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
+            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
+          docker manifest push ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
+          docker manifest create ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=2.0.0.5343} \
+            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
+            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
+            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
+          docker manifest push ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=2.0.0.5343}
+          docker manifest create ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7} \
+            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
+            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
+            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
+          docker manifest push ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
+          if [[ ${GITHUB_REF//refs\/heads\//} == stable ]]; then
+            docker manifest create ${GITHUB_REPOSITORY//docker-/}:latest \
+              --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
+              --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
+              --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
+            docker manifest push ${GITHUB_REPOSITORY//docker-/}:latest
+          fi
+
+      - name: Check docker manifest
+        run: |
+          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
+          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=2.0.0.5343}
+          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
+          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:latest
+
+      - name: Take screenshot
+        env:
+          VERSION_FIELD: ${SONARR_VERSION=2.0.0.5343}
+        run: |
+          docker run --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
+          docker run --rm --user root -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" zenika/alpine-chrome:with-puppeteer apk add --no-cache curl iputils bash coreutils && bash update.sh checkservice && bash update.sh screenshot ; true
+          docker logs service
+          docker stop service
+
+      - name: Send discord notification
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_FIELD: ${SONARR_VERSION=2.0.0.5343}
+        run: |
+          curl -u "${GITHUB_REPOSITORY%/*}:${GITHUB_TOKEN}" -fsSL https://gist.githubusercontent.com/${GITHUB_REPOSITORY%/*}/3d98159d47e0bf5eccbff221f1288472/raw/discord-action-notify.sh > discord-action-notify.sh
+          bash discord-action-notify.sh
