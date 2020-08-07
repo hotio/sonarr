@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ ${1} == "screenshot" ]]; then
-    SERVICE_IP="http://$(ping -c1 -4 service | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p'):8989/system/status"
+    SERVICE_IP="http://${IP}:8989/system/status"
     NETWORK_IDLE="2"
     cd /usr/src/app && node <<EOF
 const puppeteer = require('puppeteer');
@@ -37,9 +37,9 @@ const puppeteer = require('puppeteer');
 })();
 EOF
 elif [[ ${1} == "checkservice" ]]; then
-    SERVICE="http://service:8989"
-    currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL ${SERVICE} > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
-    curl -fsSL ${SERVICE} > /dev/null
+    SERVICE="http://${IP}:8989"
+    currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${SERVICE}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
+    curl -fsSL "${SERVICE}" > /dev/null
 elif [[ ${1} == "checkdigests" ]]; then
     mkdir ~/.docker && echo '{"experimental": "enabled"}' > ~/.docker/config.json
     image="hotio/mono"
