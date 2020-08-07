@@ -37,9 +37,9 @@ const puppeteer = require('puppeteer');
 })();
 EOF
 elif [[ ${1} == "checkservice" ]]; then
-    SERVICE="http://$(ping -c1 -4 service | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p'):8989"
-    currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${SERVICE}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
-    curl -fsSL "${SERVICE}" > /dev/null
+    SERVICE="http://127.0.0.1:8989"
+    currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL ${SERVICE} > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
+    curl -fsSL ${SERVICE} > /dev/null
 elif [[ ${1} == "checkdigests" ]]; then
     mkdir ~/.docker && echo '{"experimental": "enabled"}' > ~/.docker/config.json
     image="hotio/mono"
