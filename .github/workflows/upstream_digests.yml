@@ -21,5 +21,4 @@ jobs:
       with:
         commit_message: Upstream digests have changed
         branch: ${{ matrix.branch }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.PERSONAL_TOKEN }}
+        token: ${{ secrets.PERSONAL_TOKEN }}
