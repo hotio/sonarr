@@ -65,7 +65,7 @@ jobs:
         run: |
           docker run --network ci-network --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
           docker run --network ci-network --rm --entrypoint="" -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} \
-            bash update.sh checkservice
+            apt update && apt install -y iputils-ping && bash update.sh checkservice
           docker logs service
           docker stop service
   
@@ -126,7 +126,8 @@ jobs:
       - name: Take screenshot
         run: |
           docker run --network ci-network --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
-          docker run --network ci-network --rm --user root -e VERSION_FIELD=${SONARR_VERSION=2.0.0.5343} -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" zenika/alpine-chrome:with-puppeteer apk add --no-cache curl iputils bash coreutils && bash update.sh checkservice && bash update.sh screenshot ; true
+          docker run --network ci-network --rm --user root -e VERSION_FIELD=${SONARR_VERSION=2.0.0.5343} -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" zenika/alpine-chrome:with-puppeteer \
+            apk add --no-cache curl iputils bash coreutils && bash update.sh checkservice && bash update.sh screenshot ; true
           docker logs service
           docker stop service
 
