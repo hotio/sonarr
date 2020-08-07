@@ -1,7 +1,6 @@
 #!/bin/bash
 
 if [[ ${1} == "screenshot" ]]; then
-    currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! ping -c1 -4 service > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
     SERVICE_IP="http://$(ping -c1 -4 service | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p'):8989/system/status"
     NETWORK_IDLE="2"
     cd /usr/src/app && node <<EOF
