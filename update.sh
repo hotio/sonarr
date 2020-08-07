@@ -1,7 +1,7 @@
 #!/bin/bash
 
 if [[ ${1} == "screenshot" ]]; then
-    SERVICE_IP="http://${IP}:8989/system/status"
+    SERVICE_IP="http://${ip_of_containers}:8989/system/status"
     NETWORK_IDLE="2"
     cd /usr/src/app && node <<EOF
 const puppeteer = require('puppeteer');
@@ -37,7 +37,7 @@ const puppeteer = require('puppeteer');
 })();
 EOF
 elif [[ ${1} == "checkservice" ]]; then
-    SERVICE="http://${IP}:8989"
+    SERVICE="http://${ip_of_containers}:8989"
     currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${SERVICE}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
     curl -fsSL "${SERVICE}" > /dev/null
 elif [[ ${1} == "checkdigests" ]]; then
