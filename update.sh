@@ -12,6 +12,6 @@ if [[ ${1} == "checkdigests" ]]; then
 else
     version=$(curl -fsSL "https://services.sonarr.tv/v1/download/master" | jq -r .version)
     [[ -z ${version} ]] && exit 1
-    sed -i "s/{SONARR_VERSION=[^}]*}/{SONARR_VERSION=${version}}/g" .drone.yml
+    sed -i "s/{SONARR_VERSION=[^}]*}/{SONARR_VERSION=${version}}/g" .github/workflows/build.yml
     echo "##[set-output name=version;]${version}"
 fi
