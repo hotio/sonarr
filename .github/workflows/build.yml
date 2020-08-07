@@ -62,8 +62,8 @@ jobs:
       - name: Check if app works
         run: |
           docker run --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          ip_of_containers=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' service)
-          docker run --rm --entrypoint="" -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} bash update.sh checkservice "${ip_of_containers}"
+          container_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' service)
+          docker run --rm --entrypoint="" -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} bash update.sh checkservice http://${container_ip}:8989/system/status
           docker logs service
           docker stop service
   
@@ -120,9 +120,9 @@ jobs:
       - name: Take screenshot
         run: |
           docker run --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
-          ip_of_containers=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' service)
-          sleep 30
-          docker run --rm -u root --entrypoint="" -e VERSION_FIELD=${SONARR_VERSION=2.0.0.5343} -v "${GITHUB_WORKSPACE}":"/usr/src/app" --workdir "/usr/src/app" zenika/alpine-chrome:with-puppeteer apk add --no-cache curl iputils bash coreutils && bash update.sh screenshot "${ip_of_containers}" ; true
+          container_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' service)
+          docker run --rm --entrypoint="" -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7} bash update.sh checkservice http://${container_ip}:8989/system/status
+          docker run --rm -u root -v ${GITHUB_WORKSPACE}:/usr/src/app zenika/alpine-chrome --no-sandbox --screenshot --hide-scrollbars http://${container_ip}:8989/system/status
           docker logs service
           docker stop service
 
