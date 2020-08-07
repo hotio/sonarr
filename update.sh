@@ -37,7 +37,7 @@ const puppeteer = require('puppeteer');
 })();
 EOF
 elif [[ ${1} == "checkservice" ]]; then
-    SERVICE="http://service:8989"
+    SERVICE="http://$(ping -c1 -4 service | sed -nE 's/^PING[^(]+\(([^)]+)\).*/\1/p'):8989"
     currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${SERVICE}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
     curl -fsSL "${SERVICE}" > /dev/null
 elif [[ ${1} == "checkdigests" ]]; then
