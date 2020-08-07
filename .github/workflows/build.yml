@@ -120,7 +120,9 @@ jobs:
           docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
           docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=2.0.0.5343}
           docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
-          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:latest
+          if [[ ${GITHUB_REF//refs\/heads\//} == stable ]]; then
+            docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:latest
+          fi
 
       - name: Take screenshot
         run: |
