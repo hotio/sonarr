@@ -54,6 +54,7 @@ jobs:
       - name: Prepare for tests
         run: |
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+          docker network create -d bridge ci-network
 
       - name: List installed packages
         run: |
@@ -61,8 +62,8 @@ jobs:
 
       - name: Check if app works
         run: |
-          docker run --rm -d -p 127.0.0.1:8989:8989 --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          bash update.sh checkservice
+          docker run --network ci-network --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+          docker run --network ci-network --rm --entrypoint="" -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} bash update.sh checkservice
           docker logs service
           docker stop service
   
@@ -122,8 +123,7 @@ jobs:
 
       - name: Take screenshot
         run: |
-          docker run --network ci-network -p 127.0.0.1:8989:8989 --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
-          bash update.sh checkservice
+          docker run --network ci-network --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
           docker run --network ci-network --rm --user root -e VERSION_FIELD=${SONARR_VERSION=2.0.0.5343} -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" zenika/alpine-chrome:with-puppeteer apk add --no-cache curl iputils bash coreutils && bash update.sh screenshot ; true
           docker logs service
           docker stop service
