@@ -119,12 +119,14 @@ jobs:
           docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
           docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:latest
 
-      - name: Take screenshot
-        env:
-          VERSION_FIELD: ${SONARR_VERSION=2.0.0.5343}
+      - name: Prepare for tests
         run: |
-          docker run --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
-          docker run --rm --user root -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" zenika/alpine-chrome:with-puppeteer apk add --no-cache curl iputils bash coreutils && bash update.sh checkservice && bash update.sh screenshot ; true
+          docker network create -d bridge ci-network
+
+      - name: Take screenshot
+        run: |
+          docker run --network ci-network --rm -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
+          docker run --network ci-network --rm --user root -e VERSION_FIELD=${SONARR_VERSION=2.0.0.5343} -v "${GITHUB_WORKSPACE}":"${GITHUB_WORKSPACE}" --workdir "${GITHUB_WORKSPACE}" zenika/alpine-chrome:with-puppeteer apk add --no-cache curl iputils bash coreutils && bash update.sh checkservice && bash update.sh screenshot ; true
           docker logs service
           docker stop service
 
@@ -132,7 +134,6 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION_FIELD: ${SONARR_VERSION=2.0.0.5343}
         run: |
           curl -u "${GITHUB_REPOSITORY%/*}:${GITHUB_TOKEN}" -fsSL https://gist.githubusercontent.com/${GITHUB_REPOSITORY%/*}/3d98159d47e0bf5eccbff221f1288472/raw/discord-action-notify.sh > discord-action-notify.sh
-          bash discord-action-notify.sh
+          export VERSION_FIELD=${SONARR_VERSION=2.0.0.5343} && bash discord-action-notify.sh
