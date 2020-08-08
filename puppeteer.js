@@ -15,7 +15,7 @@ const puppeteer = require('puppeteer');
   const page = await browser.newPage();
   await page.setViewport({ width: 1920, height: 1080 });
   try {
-    await page.goto("http://localhost:7878/system/status", { waitUntil: "networkidle2" });
+    await page.goto("http://localhost:8989/system/status", { waitUntil: "networkidle2" });
   } catch (e) {
     console.log(e)
     process.exit(1)
