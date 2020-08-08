@@ -28,12 +28,12 @@ The environment variables below are all optional, the values you see are the def
 
 ## Tags
 
-| Tag      | Description          | Build Status                                                                                          | Last Updated                                                                                           |
-| ---------|----------------------|-------------------------------------------------------------------------------------------------------|--------------------------------------------------------------------------------------------------------|
-| latest   | The same as `stable` |                                                                                                       |                                                                                                        |
-| stable   | Stable version, V2   | ![build](https://github.com/hotio/docker-sonarr/workflows/build/badge.svg?branch=stable&event=push)   | ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/hotio/docker-sonarr/stable)   |
-| unstable | Unstable version, V2 | ![build](https://github.com/hotio/docker-sonarr/workflows/build/badge.svg?branch=unstable&event=push) | ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/hotio/docker-sonarr/unstable) |
-| phantom  | Unstable version, V3 | ![build](https://github.com/hotio/docker-sonarr/workflows/build/badge.svg?branch=phantom&event=push)  | ![GitHub last commit (branch)](https://img.shields.io/github/last-commit/hotio/docker-sonarr/phantom)  |
+| Tag      | Description          |
+| ---------|----------------------|
+| latest   | The same as `stable` |
+| stable   | Stable version, V2   |
+| unstable | Unstable version, V2 |
+| phantom  | Unstable version, V3 |
 
 You can also find tags that reference a commit or version number.
 
