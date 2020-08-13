@@ -73,6 +73,20 @@ jobs:
         run: |
           docker logs service
   
+      - name: Push to GitHub packages
+        env:
+          DOCKER_USERNAME: ${GITHUB_REPOSITORY%/*}
+          DOCKER_PASSWORD: ${{ secrets.PERSONAL_TOKEN }}
+        run: |
+          app=$(basename "${GITHUB_REPOSITORY//docker-/}")
+          echo "${DOCKER_PASSWORD}" | docker login docker.pkg.github.com --username "${DOCKER_USERNAME}" --password-stdin
+          docker tag ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+          docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+          docker tag docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.907}-${{ matrix.architecture }}
+          docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.907}-${{ matrix.architecture }}
+          docker tag docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.907}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${{ matrix.architecture }}
+          docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${{ matrix.architecture }}
+  
   publish:
     runs-on: ubuntu-20.04
     needs: [build]
