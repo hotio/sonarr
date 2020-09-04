@@ -48,8 +48,8 @@ jobs:
             --build-arg LABEL_SOURCE="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GITHUB_REF//refs\/heads\//}" \
             --build-arg LABEL_VENDOR="${GITHUB_REPOSITORY%/*}" \
             --build-arg LABEL_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/master/README.md" \
-            --build-arg LABEL_VERSION="${SONARR_VERSION=3.0.3.911}" \
-            --build-arg SONARR_VERSION="${SONARR_VERSION=3.0.3.911}" \
+            --build-arg LABEL_VERSION="${SONARR_VERSION=3.0.3.913}" \
+            --build-arg SONARR_VERSION="${SONARR_VERSION=3.0.3.913}" \
             --build-arg PACKAGE_VERSION="${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}" \
             --file ./${ARCHITECTURE}.Dockerfile ./
 
@@ -82,9 +82,9 @@ jobs:
           echo "${DOCKER_PASSWORD}" | docker login docker.pkg.github.com --username "${DOCKER_USERNAME}" --password-stdin
           docker tag ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
           docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          docker tag docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.911}-${{ matrix.architecture }}
-          docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.911}-${{ matrix.architecture }}
-          docker tag docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.911}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${{ matrix.architecture }}
+          docker tag docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}-${{ matrix.architecture }}
+          docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}-${{ matrix.architecture }}
+          docker tag docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${{ matrix.architecture }}
           docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${{ matrix.architecture }}
   
   publish:
@@ -112,11 +112,11 @@ jobs:
             --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
             --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
           docker manifest push ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
-          docker manifest create ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.911} \
+          docker manifest create ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913} \
             --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
             --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
             --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
-          docker manifest push ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.911}
+          docker manifest push ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}
           docker manifest create ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7} \
             --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
             --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
@@ -133,7 +133,7 @@ jobs:
       - name: Check docker manifest
         run: |
           docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
-          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.911}
+          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}
           docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
           if [[ ${GITHUB_REF//refs\/heads\//} == stable ]]; then
             docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:latest
@@ -152,4 +152,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           curl -u "${GITHUB_REPOSITORY%/*}:${GITHUB_TOKEN}" -fsSL https://gist.githubusercontent.com/${GITHUB_REPOSITORY%/*}/3d98159d47e0bf5eccbff221f1288472/raw/discord-action-notify.sh > discord-action-notify.sh
-          export VERSION_FIELD=${SONARR_VERSION=3.0.3.911} && bash discord-action-notify.sh
+          export VERSION_FIELD=${SONARR_VERSION=3.0.3.913} && bash discord-action-notify.sh
