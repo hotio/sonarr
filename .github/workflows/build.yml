@@ -53,6 +53,16 @@ jobs:
             --build-arg PACKAGE_VERSION="${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}" \
             --file ./${ARCHITECTURE}.Dockerfile ./
 
+      - name: Push to GitHub registry
+        env:
+          DOCKER_USERNAME: ${GITHUB_REPOSITORY%/*}
+          DOCKER_PASSWORD: ${{ secrets.PERSONAL_TOKEN }}
+        run: |
+          echo "${DOCKER_PASSWORD}" | docker login ghcr.io --username "${DOCKER_USERNAME}" --password-stdin
+          docker pull ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+          docker tag ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} ghcr.io/${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+          docker push ghcr.io/${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+
       - name: Prepare for tests
         run: |
           docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
@@ -72,21 +82,7 @@ jobs:
         if: always()
         run: |
           docker logs service
-  
-      - name: Push to GitHub packages
-        env:
-          DOCKER_USERNAME: ${GITHUB_REPOSITORY%/*}
-          DOCKER_PASSWORD: ${{ secrets.PERSONAL_TOKEN }}
-        run: |
-          app=$(basename "${GITHUB_REPOSITORY//docker-/}")
-          echo "${DOCKER_PASSWORD}" | docker login docker.pkg.github.com --username "${DOCKER_USERNAME}" --password-stdin
-          docker tag ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          docker tag docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}-${{ matrix.architecture }}
-          docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}-${{ matrix.architecture }}
-          docker tag docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}-${{ matrix.architecture }} docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${{ matrix.architecture }}
-          docker push docker.pkg.github.com/${GITHUB_REPOSITORY}/${app}:${GITHUB_REF//refs\/heads\//}-${{ matrix.architecture }}
-  
+
   publish:
     runs-on: ubuntu-20.04
     needs: [build]
@@ -98,46 +94,33 @@ jobs:
         run: |
           mkdir ~/.docker && echo '{"experimental": "enabled"}' > ~/.docker/config.json
 
-      - name: Login to DockerHub
+      - name: Login to docker registry
         env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
+          DOCKER_USERNAME_DOCKERHUB: ${{ secrets.DOCKER_USER }}
+          DOCKER_PASSWORD_DOCKERHUB: ${{ secrets.DOCKER_TOKEN }}
+          DOCKER_USERNAME_GITHUB: ${GITHUB_REPOSITORY%/*}
+          DOCKER_PASSWORD_GITHUB: ${{ secrets.PERSONAL_TOKEN }}
         run: |
-          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+          echo "${DOCKER_PASSWORD_DOCKERHUB}" | docker login docker.io --username "${DOCKER_USERNAME_DOCKERHUB}" --password-stdin
+          echo "${DOCKER_PASSWORD_GITHUB}" | docker login ghcr.io --username "${DOCKER_USERNAME_GITHUB}" --password-stdin
 
-      - name: Create docker manifest
+      - name: Create docker manifests
         run: |
-          docker manifest create ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//} \
-            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
-            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
-            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
-          docker manifest push ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
-          docker manifest create ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913} \
-            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
-            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
-            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
-          docker manifest push ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}
-          docker manifest create ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7} \
-            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
-            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
-            --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
-          docker manifest push ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
-          if [[ ${GITHUB_REF//refs\/heads\//} == stable ]]; then
-            docker manifest create ${GITHUB_REPOSITORY//docker-/}:latest \
-              --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-amd64 \
-              --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm-v7 \
-              --amend ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-linux-arm64
-            docker manifest push ${GITHUB_REPOSITORY//docker-/}:latest
-          fi
-
-      - name: Check docker manifest
-        run: |
-          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
-          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${SONARR_VERSION=3.0.3.913}
-          docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
-          if [[ ${GITHUB_REF//refs\/heads\//} == stable ]]; then
-            docker manifest inspect ${GITHUB_REPOSITORY//docker-/}:latest
-          fi
+          registries=(docker.io ghcr.io)
+          for registry in ${registries[*]}; do
+            TAG_BASE="${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}"
+            TAG="${TAG_BASE}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}"
+            docker manifest create ${registry}/${TAG_BASE} --amend ${registry}/${TAG}-linux-amd64 --amend ${registry}/${TAG}-linux-arm-v7 --amend ${registry}/${TAG}-linux-arm64
+            docker manifest push   ${registry}/${TAG_BASE}
+            docker manifest create ${registry}/${TAG_BASE}-${SONARR_VERSION=3.0.3.913} --amend ${registry}/${TAG}-linux-amd64 --amend ${registry}/${TAG}-linux-arm-v7 --amend ${registry}/${TAG}-linux-arm64
+            docker manifest push   ${registry}/${TAG_BASE}-${SONARR_VERSION=3.0.3.913}
+            docker manifest create ${registry}/${TAG_BASE}-${GITHUB_SHA:0:7} --amend ${registry}/${TAG}-linux-amd64 --amend ${registry}/${TAG}-linux-arm-v7 --amend ${registry}/${TAG}-linux-arm64
+            docker manifest push   ${registry}/${TAG_BASE}-${GITHUB_SHA:0:7}
+            if [[ ${GITHUB_REF//refs\/heads\//} == stable ]]; then
+              docker manifest create ${registry}/${GITHUB_REPOSITORY//docker-/}:latest --amend ${registry}/${TAG}-linux-amd64 --amend ${registry}/${TAG}-linux-arm-v7 --amend ${registry}/${TAG}-linux-arm64
+              docker manifest push   ${registry}/${GITHUB_REPOSITORY//docker-/}:latest
+            fi
+          done
 
       - name: Take screenshot
         run: |
