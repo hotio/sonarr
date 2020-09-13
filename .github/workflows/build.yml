@@ -10,6 +10,8 @@ jobs:
     strategy:
       matrix:
         architecture: [linux-arm-v7, linux-arm64, linux-amd64]
+    outputs:
+      version: ${{ steps.prep.outputs.version }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -23,65 +25,71 @@ jobs:
             true
           fi
 
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v1
+
       - name: Set up Docker Buildx
-        uses: crazy-max/ghaction-docker-buildx@v3
+        uses: docker/setup-buildx-action@v1
+        with:
+          install: true
+          version: latest
+          driver-opts: image=moby/buildkit:master
 
       - name: Login to DockerHub
-        env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASSWORD: ${{ secrets.DOCKER_TOKEN }}
-        run: |
-          echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Build images using buildx
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PERSONAL_TOKEN }}
+
+      - name: Prepare
+        id: prep
         run: |
           ARCHITECTURE=${{ matrix.architecture }}
-          docker buildx build \
-            --cache-from "${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-cache-${ARCHITECTURE}" \
-            --cache-to "${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-cache-${ARCHITECTURE}" \
-            --platform ${ARCHITECTURE//-/\/} \
-            --output "type=image,push=true" \
-            --tag ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${ARCHITECTURE} \
-            --build-arg LABEL_CREATED="$(date -u +'%Y-%m-%dT%H:%M:%SZ')" \
-            --build-arg LABEL_TITLE="${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}" \
-            --build-arg LABEL_REVISION="${GITHUB_SHA}" \
-            --build-arg LABEL_SOURCE="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GITHUB_REF//refs\/heads\//}" \
-            --build-arg LABEL_VENDOR="${GITHUB_REPOSITORY%/*}" \
-            --build-arg LABEL_URL="${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/master/README.md" \
-            --build-arg LABEL_VERSION="${SONARR_VERSION=3.0.3.924}" \
-            --build-arg SONARR_VERSION="${SONARR_VERSION=3.0.3.924}" \
-            --build-arg PACKAGE_VERSION="${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}" \
-            --file ./${ARCHITECTURE}.Dockerfile ./
+          VERSION=$(grep "^VERSION=.*$" ./VERSION | sed s/VERSION=//)
+          BUILD_ARGS=$(paste -sd, ./VERSION),PACKAGE_VERSION=${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}
+          echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
+          echo ::set-output name=title::${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
+          echo ::set-output name=revision::${GITHUB_SHA}
+          echo ::set-output name=source::${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/tree/${GITHUB_REF//refs\/heads\//}
+          echo ::set-output name=vendor::${{ github.repository_owner }}
+          echo ::set-output name=url::${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/blob/master/README.md
+          echo ::set-output name=platform::${ARCHITECTURE//-/\/}
+          echo ::set-output name=cache::${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-cache-${{ matrix.architecture }}
+          echo ::set-output name=tag::${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+          echo ::set-output name=version::${VERSION}
+          echo ::set-output name=build-args::${BUILD_ARGS}
 
-      - name: Push to GitHub registry
-        env:
-          DOCKER_USERNAME: ${GITHUB_REPOSITORY%/*}
-          DOCKER_PASSWORD: ${{ secrets.PERSONAL_TOKEN }}
-        run: |
-          echo "${DOCKER_PASSWORD}" | docker login ghcr.io --username "${DOCKER_USERNAME}" --password-stdin
-          docker pull ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          docker tag ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} ghcr.io/${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          docker push ghcr.io/${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
+      - name: Build and push
+        uses: docker/build-push-action@v2
+        with:
+          push: true
+          platforms: ${{ steps.prep.outputs.platform }}
+          file: ./${{ matrix.architecture }}.Dockerfile
+          cache-from: ${{ steps.prep.outputs.cache }}
+          cache-to: ${{ steps.prep.outputs.cache }}
+          tags: |
+            ${{ steps.prep.outputs.tag }}
+            ghcr.io/${{ steps.prep.outputs.tag }}
+          labels: |
+            org.opencontainers.image.created=${{ steps.prep.outputs.created }}
+            org.opencontainers.image.title=${{ steps.prep.outputs.title }}
+            org.opencontainers.image.revision=${{ steps.prep.outputs.revision }}
+            org.opencontainers.image.source=${{ steps.prep.outputs.source }}
+            org.opencontainers.image.vendor=${{ steps.prep.outputs.vendor }}
+            org.opencontainers.image.url=${{ steps.prep.outputs.url }}
+            org.opencontainers.image.version=${{ steps.prep.outputs.version }}
+          build-args: ${{ steps.prep.outputs.build-args }}
 
-      - name: Prepare for tests
+      - name: Run tests
         run: |
-          docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
-
-      - name: List installed packages
-        run: |
-          docker run --rm --entrypoint="" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }} apt list --installed
-
-      - name: Check if app works
-        run: |
-          app_url="http://localhost:8989/system/status"
-          docker run --rm --network host -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${app_url}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
-          curl -fsSL "${app_url}" > /dev/null
-
-      - name: Show docker logs
-        if: always()
-        run: |
-          docker logs service
+          bash update.sh tests ${{ steps.prep.outputs.tag }}
 
   publish:
     runs-on: ubuntu-20.04
@@ -90,49 +98,70 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Enable experimental
-        run: |
-          mkdir ~/.docker && echo '{"experimental": "enabled"}' > ~/.docker/config.json
+      - name: Login to DockerHub
+        uses: docker/login-action@v1
+        with:
+          username: ${{ secrets.DOCKER_USER }}
+          password: ${{ secrets.DOCKER_TOKEN }}
 
-      - name: Login to docker registry
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.PERSONAL_TOKEN }}
+
+      - name: Create manifests for DockerHub
         env:
-          DOCKER_USERNAME_DOCKERHUB: ${{ secrets.DOCKER_USER }}
-          DOCKER_PASSWORD_DOCKERHUB: ${{ secrets.DOCKER_TOKEN }}
-          DOCKER_USERNAME_GITHUB: ${GITHUB_REPOSITORY%/*}
-          DOCKER_PASSWORD_GITHUB: ${{ secrets.PERSONAL_TOKEN }}
+          DOCKER_CLI_EXPERIMENTAL: enabled
         run: |
-          echo "${DOCKER_PASSWORD_DOCKERHUB}" | docker login docker.io --username "${DOCKER_USERNAME_DOCKERHUB}" --password-stdin
-          echo "${DOCKER_PASSWORD_GITHUB}" | docker login ghcr.io --username "${DOCKER_USERNAME_GITHUB}" --password-stdin
+          IMAGE=${GITHUB_REPOSITORY//docker-/}
+          TAG=${GITHUB_REF//refs\/heads\//}
+          SOURCE=${IMAGE}:${TAG}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}
+          docker manifest create ${IMAGE}:${TAG}                                    --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}
+          docker manifest create ${IMAGE}:${TAG}-${{ needs.build.outputs.version }} --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}-${{ needs.build.outputs.version }}
+          docker manifest create ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}                  --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}
+          if [[ ${GITHUB_REF//refs\/heads\//} == stable ]]; then
+          docker manifest create ${IMAGE}:latest                                    --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:latest
+          fi
 
-      - name: Create docker manifests
+      - name: Create manifests for GitHub Container Registry
+        env:
+          DOCKER_CLI_EXPERIMENTAL: enabled
         run: |
-          registries=(docker.io ghcr.io)
-          for registry in ${registries[*]}; do
-            TAG_BASE="${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}"
-            TAG="${TAG_BASE}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}"
-            docker manifest create ${registry}/${TAG_BASE} --amend ${registry}/${TAG}-linux-amd64 --amend ${registry}/${TAG}-linux-arm-v7 --amend ${registry}/${TAG}-linux-arm64
-            docker manifest push   ${registry}/${TAG_BASE}
-            docker manifest create ${registry}/${TAG_BASE}-${SONARR_VERSION=3.0.3.924} --amend ${registry}/${TAG}-linux-amd64 --amend ${registry}/${TAG}-linux-arm-v7 --amend ${registry}/${TAG}-linux-arm64
-            docker manifest push   ${registry}/${TAG_BASE}-${SONARR_VERSION=3.0.3.924}
-            docker manifest create ${registry}/${TAG_BASE}-${GITHUB_SHA:0:7} --amend ${registry}/${TAG}-linux-amd64 --amend ${registry}/${TAG}-linux-arm-v7 --amend ${registry}/${TAG}-linux-arm64
-            docker manifest push   ${registry}/${TAG_BASE}-${GITHUB_SHA:0:7}
-            if [[ ${GITHUB_REF//refs\/heads\//} == stable ]]; then
-              docker manifest create ${registry}/${GITHUB_REPOSITORY//docker-/}:latest --amend ${registry}/${TAG}-linux-amd64 --amend ${registry}/${TAG}-linux-arm-v7 --amend ${registry}/${TAG}-linux-arm64
-              docker manifest push   ${registry}/${GITHUB_REPOSITORY//docker-/}:latest
-            fi
-          done
+          IMAGE=ghcr.io/${GITHUB_REPOSITORY//docker-/}
+          TAG=${GITHUB_REF//refs\/heads\//}
+          SOURCE=${IMAGE}:${TAG}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}
+          docker manifest create ${IMAGE}:${TAG}                                    --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}
+          docker manifest create ${IMAGE}:${TAG}-${{ needs.build.outputs.version }} --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}-${{ needs.build.outputs.version }}
+          docker manifest create ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}                  --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}
+          if [[ ${GITHUB_REF//refs\/heads\//} == stable ]]; then
+          docker manifest create ${IMAGE}:latest                                    --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:latest
+          fi
+
+  notify:
+    runs-on: ubuntu-20.04
+    if: ${{ always() }}
+    needs: [build, publish]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
 
       - name: Take screenshot
+        if: "contains(needs.publish.result, 'success')"
         run: |
-          app_url="http://localhost:8989/system/status"
-          docker run --rm --network host -d --name service -e DEBUG="yes" ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
-          currenttime=$(date +%s); maxtime=$((currenttime+60)); while (! curl -fsSL "${app_url}" > /dev/null) && [[ "$currenttime" -lt "$maxtime" ]]; do sleep 1; currenttime=$(date +%s); done
-          docker run --rm --network host --entrypoint="" -u $(id -u $USER) -v ${GITHUB_WORKSPACE}:/usr/src/app/src zenika/alpine-chrome:with-puppeteer node src/puppeteer.js
+          if [[ -f puppeteer.js ]]; then
+            bash update.sh screenshot ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
+          fi
 
       - name: Send discord notification
+        if: "!contains(github.event.head_commit.message, 'skip ci')"
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+          GITHUB_OWNER: ${{ github.repository_owner }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION_FIELD: ${{ needs.build.outputs.version }}
+          STATUS: ${{ needs.publish.result }}
         run: |
-          curl -u "${GITHUB_REPOSITORY%/*}:${GITHUB_TOKEN}" -fsSL https://gist.githubusercontent.com/${GITHUB_REPOSITORY%/*}/3d98159d47e0bf5eccbff221f1288472/raw/discord-action-notify.sh > discord-action-notify.sh
-          export VERSION_FIELD=${SONARR_VERSION=3.0.3.924} && bash discord-action-notify.sh
+          curl -u "${GITHUB_OWNER}:${GITHUB_TOKEN}" -fsSL https://gist.githubusercontent.com/${GITHUB_OWNER}/3d98159d47e0bf5eccbff221f1288472/raw/discord-action-notify.sh > discord-action-notify.sh
+          bash discord-action-notify.sh
