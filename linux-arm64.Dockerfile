@@ -1,4 +1,4 @@
-FROM hotio/mono@sha256:7283a530e4909bd2c1040a69c696569222e4426dad50af361d3827d5dcaaf254
+FROM hotio/mono@sha256:9debeb16ac81e783fcd8f2ca06213ea6c99c72f045f71397335ab58ded3dae9b
 
 ARG DEBIAN_FRONTEND="noninteractive"
 
