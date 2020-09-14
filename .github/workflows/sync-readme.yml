@@ -15,7 +15,7 @@ jobs:
         echo "##[set-output name=description;]$(curl -s "https://api.github.com/repos/${GITHUB_REPOSITORY}" | jq -r '.description')"
       id: create_outputs
     - name: Sync README
-      uses: meeDamian/sync-readme@v1.0.5
+      uses: meeDamian/sync-readme@v1.0.6
       with:
         pass: ${{ secrets.DOCKER_PASS }}
         description: ${{ steps.create_outputs.outputs.description }}
