@@ -19,7 +19,7 @@ jobs:
         bash update.sh
       id: update_files
     - name: Commit and push changes
-      uses: stefanzweifel/git-auto-commit-action@v2.5.0
+      uses: stefanzweifel/git-auto-commit-action@v4.5.1
       with:
         commit_message: ${{ format('Updated to version - {0}', steps.update_files.outputs.version) }}
         branch: ${{ matrix.branch }}
