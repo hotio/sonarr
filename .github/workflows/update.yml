@@ -19,7 +19,17 @@ jobs:
         bash update.sh
       id: update_files
     - name: Commit and push changes
+      id: commit
       uses: stefanzweifel/git-auto-commit-action@v4.5.1
       with:
         commit_message: ${{ format('Updated to version - {0}', steps.update_files.outputs.version) }}
         branch: ${{ matrix.branch }}
+    - name: Send discord notification
+      if: "contains(steps.commit.outputs.changes_detected, 'true')"
+      env:
+        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
+        VERSION: ${{ steps.update_files.outputs.version }}
+        TAG: ${{ matrix.branch }}
+      run: |
+        json='{"embeds": [{"title": "'${GITHUB_REPOSITORY//docker-/}'","description": "Updated version `'${VERSION}'` detected for tag `'${TAG}'`.","color": 4886754,"footer": {"text": "Powered by GitHub Actions"},"timestamp": "'$(date -u --iso-8601=seconds)'"}]}'
+        curl -fsSL -X POST -H "Content-Type: application/json" -d "${json}" "${DISCORD_WEBHOOK}"
