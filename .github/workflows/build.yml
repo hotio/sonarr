@@ -87,6 +87,19 @@ jobs:
             org.opencontainers.image.version=${{ steps.prep.outputs.version }}
           build-args: ${{ steps.prep.outputs.build-args }}
 
+      - name: Configure Dive
+        run: |
+          echo "rules:" > ${{ github.workspace }}/.dive.yml
+          echo "  lowestEfficiency: 0.95" >> ${{ github.workspace }}/.dive.yml
+          echo "  highestWastedBytes: 20MB" >> ${{ github.workspace }}/.dive.yml
+          echo "  highestUserWastedPercent: 0.20" >> ${{ github.workspace }}/.dive.yml
+
+      - name: Dive Analysis
+        uses: yuichielectric/dive-action@0.0.2
+        with:
+          image: "${{ steps.prep.outputs.tag }}"
+          config-file: ${{ github.workspace }}/.dive.yml
+
       - name: Run tests
         run: |
           bash update.sh tests ${{ steps.prep.outputs.tag }}
