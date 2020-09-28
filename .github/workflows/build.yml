@@ -95,7 +95,7 @@ jobs:
           echo "  highestUserWastedPercent: 0.20" >> ${{ github.workspace }}/.dive.yml
 
       - name: Dive Analysis
-        uses: yuichielectric/dive-action@0.0.2
+        uses: yuichielectric/dive-action@0.0.3
         with:
           image: "${{ steps.prep.outputs.tag }}"
           config-file: ${{ github.workspace }}/.dive.yml
