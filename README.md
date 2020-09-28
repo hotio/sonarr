@@ -30,12 +30,11 @@ The environment variables below are all optional, the values you see are the def
 
 ## Tags
 
-| Tag      | Description          |
-| ---------|----------------------|
-| latest   | The same as `stable` |
-| stable   | Stable version, V2   |
-| unstable | Unstable version, V2 |
-| phantom  | Unstable version, V3 |
+| Tag              | Upstream        |
+| -----------------|-----------------|
+| release (latest) | master          |
+| testing          | develop         |
+| nightly          | phantom-develop |
 
 You can also find tags that reference a commit or version number.
 

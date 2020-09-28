@@ -10,16 +10,16 @@ updates:
     directory: "/"
     schedule:
       interval: "daily"
-    target-branch: "stable"
+    target-branch: "release"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-    target-branch: "unstable"
+    target-branch: "testing"
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "daily"
-    target-branch: "phantom"
+    target-branch: "nightly"
