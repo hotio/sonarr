@@ -179,5 +179,5 @@ jobs:
           VERSION_FIELD: ${{ needs.build.outputs.version }}
           STATUS: ${{ needs.publish.result }}
         run: |
-          curl -u "${GITHUB_OWNER}:${GITHUB_TOKEN}" -fsSL https://gist.githubusercontent.com/${GITHUB_OWNER}/3d98159d47e0bf5eccbff221f1288472/raw/discord-action-notify.sh > discord-action-notify.sh
+          curl -fsSL https://raw.githubusercontent.com/docker-hotio/.github/master/discord-notification.sh > discord-action-notify.sh
           bash discord-action-notify.sh
