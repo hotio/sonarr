@@ -1,5 +1,3 @@
-# sonarr
-
 [<img src="https://hotio.dev/img/sonarr.png" alt="logo" height="130" width="130">](https://github.com/Sonarr/Sonarr)
 
 ![Base](https://img.shields.io/badge/base-ubuntu-orange)
