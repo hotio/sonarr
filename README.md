@@ -1,6 +1,6 @@
 # sonarr
 
-![logo](https://hotio.dev/img/sonarr.png)
+[<img src="https://hotio.dev/img/sonarr.png" alt="logo" height="130" width="130">](https://github.com/Sonarr/Sonarr)
 
 ![Base](https://img.shields.io/badge/base-ubuntu-orange)
 [![GitHub](https://img.shields.io/badge/source-github-lightgrey)](https://github.com/hotio/docker-sonarr)
