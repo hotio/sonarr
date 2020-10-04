@@ -29,11 +29,11 @@ The [highlighted](https://hotio.dev/containers/sonarr) variables are all optiona
 
 ## Tags
 
-| Tag                | Upstream        | Version |
-| -------------------|-----------------|---------|
-| `release` (latest) | master          | ![version](https://img.shields.io/badge/dynamic/json?color=f5f5f5&style=flat-square&label=&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdocker-hotio%2Fdocker-sonarr%2Frelease%2FVERSION.json) |
-| `testing`          | develop         | ![version](https://img.shields.io/badge/dynamic/json?color=f5f5f5&style=flat-square&label=&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdocker-hotio%2Fdocker-sonarr%2Ftesting%2FVERSION.json) |
-| `nightly`          | phantom-develop | ![version](https://img.shields.io/badge/dynamic/json?color=f5f5f5&style=flat-square&label=&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdocker-hotio%2Fdocker-sonarr%2Fnightly%2FVERSION.json) |
+| Tag                | Upstream        | Version | Build |
+| -------------------|-----------------|---------|-------|
+| `release` (latest) | master          | ![version](https://img.shields.io/badge/dynamic/json?color=f5f5f5&style=flat-square&label=&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdocker-hotio%2Fdocker-sonarr%2Frelease%2FVERSION.json) | ![build](https://img.shields.io/github/workflow/status/docker-hotio/docker-sonarr/build/release?style=flat-square&label=) |
+| `testing`          | develop         | ![version](https://img.shields.io/badge/dynamic/json?color=f5f5f5&style=flat-square&label=&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdocker-hotio%2Fdocker-sonarr%2Ftesting%2FVERSION.json) | ![build](https://img.shields.io/github/workflow/status/docker-hotio/docker-sonarr/build/testing?style=flat-square&label=) |
+| `nightly`          | phantom-develop | ![version](https://img.shields.io/badge/dynamic/json?color=f5f5f5&style=flat-square&label=&query=%24.version&url=https%3A%2F%2Fraw.githubusercontent.com%2Fdocker-hotio%2Fdocker-sonarr%2Fnightly%2FVERSION.json) | ![build](https://img.shields.io/github/workflow/status/docker-hotio/docker-sonarr/build/nightly?style=flat-square&label=) |
 
 You can also find tags that reference a commit or version number.
 
