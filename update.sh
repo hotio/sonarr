@@ -34,5 +34,6 @@ else
     [[ -z ${version_arr_discord_notifier} ]] && exit 1
     echo "VERSION=${version}" > VERSION
     echo "ARR_DISCORD_NOTIFIER_VERSION=${version_arr_discord_notifier}" >> VERSION
+    echo '{"version":"'"${version}"'"}' > VERSION.json
     echo "##[set-output name=version;]${version}/${version_arr_discord_notifier}"
 fi
