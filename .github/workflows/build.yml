@@ -55,8 +55,8 @@ jobs:
         id: prep
         run: |
           ARCHITECTURE=${{ matrix.architecture }}
-          VERSION=$(grep "^VERSION=.*$" ./VERSION | sed s/VERSION=//)
-          BUILD_ARGS=$(paste -sd, ./VERSION),PACKAGE_VERSION=${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}
+          VERSION=$(jq -r '.version' < VERSION.json)
+          BUILD_ARGS=$(jq -r 'to_entries[] | [(.key | ascii_upcase),.value] | join("=")' < VERSION.json | paste -sd,),PACKAGE_VERSION=${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}
           echo ::set-output name=created::$(date -u +'%Y-%m-%dT%H:%M:%SZ')
           echo ::set-output name=title::${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}
           echo ::set-output name=revision::${GITHUB_SHA}
@@ -90,18 +90,10 @@ jobs:
             org.opencontainers.image.version=${{ steps.prep.outputs.version }}
           build-args: ${{ steps.prep.outputs.build-args }}
 
-      - name: Configure Dive
-        run: |
-          echo "rules:" > ${{ github.workspace }}/.dive.yml
-          echo "  lowestEfficiency: 0.95" >> ${{ github.workspace }}/.dive.yml
-          echo "  highestWastedBytes: 20MB" >> ${{ github.workspace }}/.dive.yml
-          echo "  highestUserWastedPercent: 0.20" >> ${{ github.workspace }}/.dive.yml
-
       - name: Dive Analysis
         uses: yuichielectric/dive-action@0.0.4
         with:
           image: "${{ steps.prep.outputs.tag }}"
-          config-file: ${{ github.workspace }}/.dive.yml
 
       - name: Run tests
         run: |
