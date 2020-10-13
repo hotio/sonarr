@@ -18,7 +18,7 @@ jobs:
       run: |
         bash update.sh checkdigests
     - name: Commit and push changes
-      uses: stefanzweifel/git-auto-commit-action@v4.5.1
+      uses: stefanzweifel/git-auto-commit-action@v4.6.0
       with:
         commit_message: Upstream digests have changed
         branch: ${{ matrix.branch }}
