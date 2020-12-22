@@ -173,8 +173,8 @@ jobs:
           docker manifest push ${IMAGE}:${TAG}
           docker manifest create ${IMAGE}:${TAG}-${GITHUB_SHA:0:7} ${AMD64} ${ARM64} ${ARMV7}
           docker manifest push ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}
-          docker manifest create ${IMAGE}:${TAG}-${VERSION//~/-} ${AMD64} ${ARM64} ${ARMV7}
-          docker manifest push ${IMAGE}:${TAG}-${VERSION//~/-}
+          docker manifest create ${IMAGE}:${TAG}-${VERSION//\~/-} ${AMD64} ${ARM64} ${ARMV7}
+          docker manifest push ${IMAGE}:${TAG}-${VERSION//\~/-}
           if [[ ${BRANCH} != null ]]; then
             docker manifest create ${IMAGE}:${TAG}-${BRANCH} ${AMD64} ${ARM64} ${ARMV7}
             docker manifest push ${IMAGE}:${TAG}-${BRANCH}
