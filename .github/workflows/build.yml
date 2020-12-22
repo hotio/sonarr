@@ -15,11 +15,18 @@ jobs:
         architecture: [linux-arm-v7, linux-arm64, linux-amd64]
     outputs:
       version: ${{ steps.prep.outputs.version }}
+      branch: ${{ steps.prep.outputs.branch }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
+      - name: Check if architecture exists
+        id: arch_check
+        run: |
+          (test -f ${{ matrix.architecture }}.Dockerfile && echo ::set-output name=check::passed) || echo ::set-output name=check::failed
+
       - name: Shellcheck
+        if: "contains(steps.arch_check.outputs.check, 'passed')"
         run: |
           shellcheck --version
           if [[ -d ./root ]]; then
@@ -29,9 +36,11 @@ jobs:
           fi
 
       - name: Set up QEMU
+        if: "contains(steps.arch_check.outputs.check, 'passed')"
         uses: docker/setup-qemu-action@v1
 
       - name: Set up Docker Buildx
+        if: "contains(steps.arch_check.outputs.check, 'passed')"
         uses: docker/setup-buildx-action@v1
         with:
           install: true
@@ -39,12 +48,14 @@ jobs:
           driver-opts: image=moby/buildkit:master
 
       - name: Login to DockerHub
+        if: "contains(steps.arch_check.outputs.check, 'passed')"
         uses: docker/login-action@v1
         with:
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Login to GitHub Container Registry
+        if: "contains(steps.arch_check.outputs.check, 'passed')"
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
@@ -52,6 +63,7 @@ jobs:
           password: ${{ secrets.PERSONAL_TOKEN }}
 
       - name: Prepare
+        if: "contains(steps.arch_check.outputs.check, 'passed')"
         id: prep
         run: |
           ARCHITECTURE=${{ matrix.architecture }}
@@ -64,18 +76,34 @@ jobs:
           echo ::set-output name=platform::${ARCHITECTURE//-/\/}
           echo ::set-output name=cache::${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-cache-${{ matrix.architecture }}
           echo ::set-output name=tag::${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}-${{ matrix.architecture }}
-          echo ::set-output name=version::$(jq -r '.version' < VERSION.json)
-          echo ::set-output name=version_arr_discord_notifier::$(jq -r '.arr_discord_notifier_version' < VERSION.json)
-          echo ::set-output name=package_version::${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}
+          VERSION=$(jq -r '.version' < VERSION.json)
+          if [[ ${VERSION} == null ]] || [[ -z ${VERSION} ]]; then
+            VERSION=$(date +"%Y%m%d%H%M%S")
+          fi
+          BRANCH=$(jq -r '.branch' < VERSION.json)
+          if [[ ${BRANCH} == null ]] || [[ -z ${BRANCH} ]]; then
+            echo ::set-output name=branch::null
+            echo ::set-output name=version::${VERSION}
+          else
+            echo ::set-output name=branch::${BRANCH}
+            echo ::set-output name=version::${BRANCH}-${VERSION}
+          fi
+          ARGS="$(jq -r 'to_entries[] | [(.key | ascii_upcase),.value] | join("=")' < VERSION.json)"
+          ARGS="${ARGS//'%'/'%25'}"
+          ARGS="${ARGS//$'\n'/'%0A'}"
+          ARGS="${ARGS//$'\r'/'%0D'}"
+          echo "::set-output name=build-args::${ARGS}"
+          echo "::set-output name=package-version::${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}"
 
       - name: Build and push
+        if: "contains(steps.arch_check.outputs.check, 'passed')"
         uses: docker/build-push-action@v2
         with:
           push: true
           platforms: ${{ steps.prep.outputs.platform }}
           file: ./${{ matrix.architecture }}.Dockerfile
-          cache-from: ${{ steps.prep.outputs.cache }}
-          cache-to: ${{ steps.prep.outputs.cache }}
+          cache-from: ghcr.io/${{ steps.prep.outputs.cache }}
+          cache-to: ghcr.io/${{ steps.prep.outputs.cache }}
           tags: |
             ${{ steps.prep.outputs.tag }}
             ghcr.io/${{ steps.prep.outputs.tag }}
@@ -88,65 +116,72 @@ jobs:
             org.opencontainers.image.url=${{ steps.prep.outputs.url }}
             org.opencontainers.image.version=${{ steps.prep.outputs.version }}
           build-args: |
-            VERSION=${{ steps.prep.outputs.version }}
-            ARR_DISCORD_NOTIFIER_VERSION=${{ steps.prep.outputs.version_arr_discord_notifier }}
-            PACKAGE_VERSION=${{ steps.prep.outputs.package_version }}
+            BUILD_ARCHITECTURE=${{ matrix.architecture }}
+            PACKAGE_VERSION=${{ steps.prep.outputs.package-version }}
+            ${{ steps.prep.outputs.build-args }}
 
       - name: Dive Analysis
+        if: "contains(steps.arch_check.outputs.check, 'passed')"
         uses: yuichielectric/dive-action@0.0.4
         with:
-          image: "${{ steps.prep.outputs.tag }}"
+          image: "ghcr.io/${{ steps.prep.outputs.tag }}"
 
       - name: Run tests
+        if: "contains(steps.arch_check.outputs.check, 'passed')"
         run: |
-          bash update.sh tests ${{ steps.prep.outputs.tag }}
+          bash update.sh tests ghcr.io/${{ steps.prep.outputs.tag }}
 
   publish:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        registry: [docker.io, ghcr.io]
     needs: [build]
     steps:
       - name: Checkout
         uses: actions/checkout@v2
 
       - name: Login to DockerHub
+        if: matrix.registry == 'docker.io'
         uses: docker/login-action@v1
         with:
+          registry: docker.io
           username: ${{ secrets.DOCKER_USER }}
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Login to GitHub Container Registry
+        if: matrix.registry == 'ghcr.io'
         uses: docker/login-action@v1
         with:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.PERSONAL_TOKEN }}
 
-      - name: Create manifests for DockerHub
+      - name: Create manifests
         env:
           DOCKER_CLI_EXPERIMENTAL: enabled
         run: |
-          IMAGE=${GITHUB_REPOSITORY//docker-/}
+          IMAGE=${{ matrix.registry }}/${GITHUB_REPOSITORY//docker-/}
           TAG=${GITHUB_REF//refs\/heads\//}
           SOURCE=${IMAGE}:${TAG}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}
-          docker manifest create ${IMAGE}:${TAG}                                    --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}
-          docker manifest create ${IMAGE}:${TAG}-${{ needs.build.outputs.version }} --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}-${{ needs.build.outputs.version }}
-          docker manifest create ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}                  --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}
-          if [[ ${GITHUB_REF//refs\/heads\//} == release ]]; then
-          docker manifest create ${IMAGE}:latest                                    --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:latest
+          VERSION=${{ needs.build.outputs.version }}
+          BRANCH=${{ needs.build.outputs.branch }}
+          [[ -f linux-amd64.Dockerfile ]]  && AMD64=${SOURCE}-linux-amd64
+          [[ -f linux-arm64.Dockerfile ]]  && ARM64=${SOURCE}-linux-arm64
+          [[ -f linux-arm-v7.Dockerfile ]] && ARMV7=${SOURCE}-linux-arm-v7
+          docker manifest create ${IMAGE}:${TAG} ${AMD64} ${ARM64} ${ARMV7}
+          docker manifest push ${IMAGE}:${TAG}
+          docker manifest create ${IMAGE}:${TAG}-${GITHUB_SHA:0:7} ${AMD64} ${ARM64} ${ARMV7}
+          docker manifest push ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}
+          docker manifest create ${IMAGE}:${TAG}-${VERSION} ${AMD64} ${ARM64} ${ARMV7}
+          docker manifest push ${IMAGE}:${TAG}-${VERSION}
+          if [[ ${BRANCH} != null ]]; then
+            docker manifest create ${IMAGE}:${TAG}-${BRANCH} ${AMD64} ${ARM64} ${ARMV7}
+            docker manifest push ${IMAGE}:${TAG}-${BRANCH}
           fi
-
-      - name: Create manifests for GitHub Container Registry
-        env:
-          DOCKER_CLI_EXPERIMENTAL: enabled
-        run: |
-          IMAGE=ghcr.io/${GITHUB_REPOSITORY//docker-/}
-          TAG=${GITHUB_REF//refs\/heads\//}
-          SOURCE=${IMAGE}:${TAG}-${GITHUB_SHA:0:7}-${GITHUB_RUN_NUMBER}
-          docker manifest create ${IMAGE}:${TAG}                                    --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}
-          docker manifest create ${IMAGE}:${TAG}-${{ needs.build.outputs.version }} --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}-${{ needs.build.outputs.version }}
-          docker manifest create ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}                  --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:${TAG}-${GITHUB_SHA:0:7}
           if [[ ${GITHUB_REF//refs\/heads\//} == release ]]; then
-          docker manifest create ${IMAGE}:latest                                    --amend ${SOURCE}-linux-amd64 --amend ${SOURCE}-linux-arm-v7 --amend ${SOURCE}-linux-arm64 && docker manifest push ${IMAGE}:latest
+            docker manifest create ${IMAGE}:latest ${AMD64} ${ARM64} ${ARMV7}
+            docker manifest push ${IMAGE}:latest
           fi
 
   notify:
@@ -161,7 +196,7 @@ jobs:
         if: "contains(needs.publish.result, 'success')"
         run: |
           if [[ -f puppeteer.js ]]; then
-            bash update.sh screenshot ${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
+            bash update.sh screenshot ghcr.io/${GITHUB_REPOSITORY//docker-/}:${GITHUB_REF//refs\/heads\//}-${GITHUB_SHA:0:7}
           fi
 
       - name: Send discord notification
