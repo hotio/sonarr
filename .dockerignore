@@ -1,7 +1,6 @@
 .git
-.gitignore
 .github
 .gitattributes
-.drone.yml
-README.md
+VERSION.json
+puppeteer.js
 update.sh
