@@ -205,8 +205,49 @@ jobs:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
           GITHUB_OWNER: ${{ github.repository_owner }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          VERSION_FIELD: ${{ needs.build.outputs.version }}
+          VERSION: ${{ needs.build.outputs.version }}
           STATUS: ${{ needs.publish.result }}
+        shell: bash
         run: |
-          curl -fsSL https://raw.githubusercontent.com/hotio/.github/master/discord-notification.sh > discord-action-notify.sh
-          bash discord-action-notify.sh
+          COMMIT_MESSAGE="$(curl -u "${GITHUB_OWNER}:${GITHUB_TOKEN}" -fsSL "https://api.github.com/repos/${GITHUB_REPOSITORY}/commits/${GITHUB_SHA}" | jq -r .commit.message | head -1)"
+          if [[ "${STATUS}" == "success" ]]; then
+              COLOR="3066993"
+          else
+              COLOR="15158332"
+          fi
+          if [[ ! -f "screenshot.png" ]]; then
+              curl -fsSL "https://robohash.org/${RANDOM}.png?set=set3" > screenshot.png
+          fi
+          json='{
+            "embeds": [
+              {
+                "title": "'${GITHUB_REPOSITORY}':'${GITHUB_REF//refs\/heads\//}'",
+                "url": "https://github.com/'${GITHUB_REPOSITORY}'/actions/runs/'${GITHUB_RUN_ID}'",
+                "color": '${COLOR}',
+                "fields": [
+                  {
+                    "name": "Commit Message",
+                    "value": "```'${COMMIT_MESSAGE//\"/\\\"}'```"
+                  },
+                  {
+                    "name": "Commit",
+                    "value": "['${GITHUB_SHA:0:7}'](https://github.com/'${GITHUB_REPOSITORY}'/commit/'${GITHUB_SHA}')",
+                    "inline": true
+                  },
+                  {
+                    "name": "Version",
+                    "value": "'${VERSION}'",
+                    "inline": true
+                  }
+                ],
+                "footer": {
+                  "text": "Powered by GitHub Actions"
+                },
+                "timestamp": "'$(date -u +'%FT%T.%3NZ')'",
+                "image": {
+                  "url": "attachment://screenshot.png"
+                }
+              }
+            ]
+          }'
+          curl -fsSL -H "Content-Type: multipart/form-data" -F "file=@screenshot.png" -F "payload_json=${json}" "${DISCORD_WEBHOOK}"
