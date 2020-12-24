@@ -218,7 +218,7 @@ jobs:
           if [[ ! -f "screenshot.png" ]]; then
               curl -fsSL "https://robohash.org/${RANDOM}.png?set=set3&size=700x700" > robo.png
               sudo apt install -y --no-install-recommends --no-install-suggests imagemagick
-              magick robo.png -resize 1920x1080 -background none -gravity center -extent 1920x1080 screenshot.png
+              convert robo.png -resize 1920x1080 -background none -gravity center -extent 1920x1080 screenshot.png
           fi
           json='{
             "embeds": [
