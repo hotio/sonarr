@@ -7,12 +7,28 @@ on:
 
 jobs:
 
-  build:
+  check:
     if: "!contains(github.event.head_commit.message, 'skip ci')"
+    runs-on: ubuntu-20.04
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Shellcheck
+        run: |
+          shellcheck --version
+          if [[ -d ./root ]]; then
+            find "./root" -type f -print -exec shellcheck {} \;
+          else
+            true
+          fi
+
+  build:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
         architecture: [linux-arm-v7, linux-arm64, linux-amd64]
+    needs: [check]
     outputs:
       version: ${{ steps.prep.outputs.version }}
       branch: ${{ steps.prep.outputs.branch }}
@@ -24,16 +40,6 @@ jobs:
         id: arch_check
         run: |
           (test -f ${{ matrix.architecture }}.Dockerfile && echo ::set-output name=check::passed) || echo ::set-output name=check::failed
-
-      - name: Shellcheck
-        if: "contains(steps.arch_check.outputs.check, 'passed')"
-        run: |
-          shellcheck --version
-          if [[ -d ./root ]]; then
-            find "./root" -type f -print -exec shellcheck {} \;
-          else
-            true
-          fi
 
       - name: Set up QEMU
         if: "contains(steps.arch_check.outputs.check, 'passed')"
@@ -190,6 +196,7 @@ jobs:
     needs: [build, publish]
     steps:
       - name: Checkout
+        if: "!contains(github.event.head_commit.message, 'skip ci')"
         uses: actions/checkout@v2
 
       - name: Take screenshot
