@@ -3,13 +3,5 @@
 
 umask "${UMASK}"
 
-redirect_cmd() {
-    if [[ "${DEBUG}" == "yes" ]]; then
-        "$@"
-    else
-        "$@" > /dev/null 2>&1
-    fi
-}
-
 # shellcheck disable=SC2086
-redirect_cmd exec s6-setuidgid hotio mono --debug "${APP_DIR}/bin/Sonarr.exe" --nobrowser --data="${CONFIG_DIR}/app" ${ARGS}
+exec s6-setuidgid hotio mono --debug "${APP_DIR}/bin/Sonarr.exe" --nobrowser --data="${CONFIG_DIR}/app" ${ARGS}
