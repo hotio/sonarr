@@ -3,5 +3,4 @@
 
 umask "${UMASK}"
 
-# shellcheck disable=SC2086
-exec s6-setuidgid hotio mono --debug "${APP_DIR}/bin/Sonarr.exe" --nobrowser --data="${CONFIG_DIR}" ${ARGS}
+exec s6-setuidgid hotio mono --debug "${APP_DIR}/bin/Sonarr.exe" --nobrowser --data="${CONFIG_DIR}"
