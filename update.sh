@@ -31,9 +31,9 @@ else
     json=$(curl -fsSL "http://services.sonarr.tv/v1/releases" | jq '.["v3-nightly"]')
     version=$(jq -r '.version' <<< "${json}")
     [[ -z ${version} ]] && exit 1
-    branch=$(jq -r '.branch' <<< "${json}")
-    [[ -z ${branch} ]] && exit 1
+    sbranch=$(jq -r '.branch' <<< "${json}")
+    [[ -z ${sbranch} ]] && exit 1
     version_arr_discord_notifier=$(curl -u "${GITHUB_ACTOR}:${GITHUB_TOKEN}" -fsSL "https://api.github.com/repos/hotio/arr-discord-notifier/tags" | jq -r .[0].name)
     [[ -z ${version_arr_discord_notifier} ]] && exit 1
-    echo '{"version":"'"${version}"'","branch":"'"${branch}"'","arr_discord_notifier_version":"'"${version_arr_discord_notifier}"'"}' | jq . > VERSION.json
+    echo '{"version":"'"${version}"'","sbranch":"'"${sbranch}"'","arr_discord_notifier_version":"'"${version_arr_discord_notifier}"'"}' | jq . > VERSION.json
 fi
