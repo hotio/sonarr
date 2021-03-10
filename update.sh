@@ -2,7 +2,7 @@
 
 if [[ ${1} == "checkdigests" ]]; then
     export DOCKER_CLI_EXPERIMENTAL=enabled
-    image="hotio/mono"
+    image="hotio/base"
     tag="focal"
     manifest=$(docker manifest inspect ${image}:${tag})
     [[ -z ${manifest} ]] && exit 1
