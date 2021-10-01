@@ -2,7 +2,7 @@ FROM ghcr.io/hotio/base@sha256:36b96946e2d3480de7e5212b33b07a56aa65052f26ce33cac
 
 EXPOSE 8989
 
-RUN apk add --no-cache coreutils grep ca-certificates sqlite-libs && \
+RUN apk add --no-cache sqlite-libs && \
     apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/main tinyxml2 && \
     apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/community libmediainfo && \
     apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/edge/testing mono
