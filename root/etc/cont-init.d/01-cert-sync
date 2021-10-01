@@ -1,0 +1,7 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+if [[ ! -f "${APP_DIR}/certsynced" ]]; then
+    cert-sync /etc/ssl/certs/ca-certificates.crt
+    touch "${APP_DIR}/certsynced"
+fi
