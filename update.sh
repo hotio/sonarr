@@ -28,7 +28,7 @@ elif [[ ${1} == "screenshot" ]]; then
     docker run --rm --network host --entrypoint="" -u "$(id -u "$USER")" -v "${GITHUB_WORKSPACE}":/usr/src/app/src zenika/alpine-chrome:with-puppeteer node src/puppeteer.js
     exit 0
 else
-    json=$(curl -fsSL "http://services.sonarr.tv/v1/releases" | jq '.["v3-nightly"]')
+    json=$(curl -fsSL "https://services.sonarr.tv/v1/update/develop/changes?version=4.0&os=linux" | jq '.[0]')
     version=$(jq -r '.version' <<< "${json}")
     [[ -z ${version} ]] && exit 1
     sbranch=$(jq -r '.branch' <<< "${json}")
