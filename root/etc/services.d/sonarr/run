@@ -3,4 +3,4 @@
 
 umask "${UMASK}"
 
-exec s6-setuidgid hotio mono --debug "${APP_DIR}/bin/Sonarr.exe" --nobrowser --data="${CONFIG_DIR}"
+exec s6-setuidgid hotio "${APP_DIR}/bin/Sonarr" --nobrowser --data="${CONFIG_DIR}"
