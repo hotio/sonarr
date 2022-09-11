@@ -1,4 +1,4 @@
-FROM cr.hotio.dev/hotio/base@sha256:3c39dad385f58b6181e4241ca35f1eaa79adfe4f435e42cba564b6b06dc3e03a
+FROM cr.hotio.dev/hotio/base@sha256:f16b2df0fbefceb0978488fb4a17221819668504b8fd47b675b65e50b074c1c4
 
 EXPOSE 8989
 
