@@ -1,5 +1,7 @@
 {
   "version": "4.0.0.104",
   "sbranch": "develop",
-  "arr_discord_notifier_version": "0.0.35"
+  "arr_discord_notifier_version": "0.0.35",
+  "upstream_image": "cr.hotio.dev/hotio/base",
+  "upstream_tag": "alpine"
 }
