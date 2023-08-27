@@ -22,4 +22,3 @@ RUN curl -fsSL "https://raw.githubusercontent.com/hotio/arr-discord-notifier/${A
     chmod u=rwx,go=rx "${APP_DIR}/arr-discord-notifier.sh"
 
 COPY root/ /
-RUN chmod -R +x /etc/cont-init.d/ /etc/services.d/
