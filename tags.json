@@ -18,15 +18,5 @@
       "release-3.0.10.1567",
       "release-328f56c"
     ]
-  },
-  "v4": {
-    "description": "v4",
-    "last_updated": "2023-09-11T20:49:10.547Z",
-    "latest": false,
-    "tags": [
-      "v4",
-      "v4-4.0.0.669",
-      "v4-92a9b73"
-    ]
   }
 }
