@@ -1,6 +1,6 @@
 #!/bin/bash
 
-json=$(curl -fsSL "https://services.sonarr.tv/v1/update/develop/changes?version=4.0&os=linux" | jq '.[0]')
+json=$(curl -fsSL "https://services.sonarr.tv/v1/releases" | jq '.["v4-preview"]')
 version=$(jq -r '.version' <<< "${json}")
 [[ -z ${version} ]] && exit 0
 sbranch=$(jq -r '.branch' <<< "${json}")
