@@ -1,12 +1,12 @@
 {
   "nightly": {
     "description": "v4-preview",
-    "last_updated": "2023-09-30T20:10:21.161Z",
+    "last_updated": "2023-10-10T06:33:24.547Z",
     "latest": false,
     "tags": [
       "nightly",
-      "nightly-4.0.0.688",
-      "nightly-2685987"
+      "nightly-4.0.0.694",
+      "nightly-ab0a890"
     ]
   },
   "release": {
