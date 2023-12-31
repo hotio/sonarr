@@ -18,5 +18,15 @@
       "release-3.0.10.1567",
       "release-ed4a31d"
     ]
+  },
+  "v4": {
+    "description": "v4-stable",
+    "last_updated": "2023-12-31T08:25:43.618Z",
+    "latest": false,
+    "tags": [
+      "v4",
+      "v4-4.0.0.741",
+      "v4-d1c23cf"
+    ]
   }
 }
