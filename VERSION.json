@@ -1,6 +1,6 @@
 {
   "description": "v4-stable",
-  "version": "4.0.0.741",
+  "version": "4.0.0.748",
   "sbranch": "main",
   "arr_discord_notifier_version": "0.0.35",
   "upstream_image": "ghcr.io/hotio/base",
