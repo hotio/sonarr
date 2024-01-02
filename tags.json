@@ -18,15 +18,5 @@
       "release-4.0.0.748",
       "release-96ae841"
     ]
-  },
-  "v4": {
-    "description": "v4-stable",
-    "last_updated": "2024-01-01T01:49:59.015Z",
-    "latest": false,
-    "tags": [
-      "v4",
-      "v4-4.0.0.748",
-      "v4-dcc2ee8"
-    ]
   }
 }
