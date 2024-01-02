@@ -10,13 +10,13 @@
     ]
   },
   "release": {
-    "description": "v3-stable",
-    "last_updated": "2023-12-01T02:15:49.738Z",
+    "description": "v4-stable",
+    "last_updated": "2024-01-02T05:42:11.111Z",
     "latest": true,
     "tags": [
       "release",
-      "release-3.0.10.1567",
-      "release-ed4a31d"
+      "release-4.0.0.748",
+      "release-96ae841"
     ]
   },
   "v4": {
