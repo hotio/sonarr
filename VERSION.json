@@ -2,7 +2,6 @@
   "description": "v4-nightly",
   "version": "4.0.0.751",
   "sbranch": "develop",
-  "arr_discord_notifier_version": "0.0.35",
   "upstream_image": "ghcr.io/hotio/base",
   "upstream_tag": "alpine",
   "upstream_digest_amd64": "sha256:f1b248466c452da319278e86d8d69f53aea51243a067678a6d3796863cbb7a5e",
