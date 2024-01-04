@@ -17,8 +17,4 @@ RUN mkdir "${APP_DIR}/bin" && \
     chmod -R u=rwX,go=rX "${APP_DIR}" && \
     chmod +x "${APP_DIR}/bin/Sonarr" "${APP_DIR}/bin/ffprobe"
 
-ARG ARR_DISCORD_NOTIFIER_VERSION
-RUN curl -fsSL "https://raw.githubusercontent.com/hotio/arr-discord-notifier/${ARR_DISCORD_NOTIFIER_VERSION}/arr-discord-notifier.sh" > "${APP_DIR}/arr-discord-notifier.sh" && \
-    chmod u=rwx,go=rx "${APP_DIR}/arr-discord-notifier.sh"
-
 COPY root/ /
