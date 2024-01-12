@@ -1,5 +1,5 @@
 {
-  "description": "v4-nightly",
+  "description": "develop/v4-nightly",
   "version": "4.0.0.825",
   "sbranch": "develop",
   "upstream_image": "ghcr.io/hotio/base",
