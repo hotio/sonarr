@@ -1,6 +1,6 @@
 {
   "latest": true,
-  "description": "v4-stable",
+  "description": "main/v4-stable",
   "version": "4.0.0.748",
   "sbranch": "main",
   "upstream_image": "ghcr.io/hotio/base",
