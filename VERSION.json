@@ -1,12 +1,12 @@
 {
   "latest": true,
   "description": "main/v4-stable",
-  "version": "4.0.0.748",
+  "version": "4.0.1.929",
   "sbranch": "main",
   "upstream_image": "ghcr.io/hotio/base",
   "upstream_tag": "alpine",
   "upstream_digest_amd64": "sha256:aba1ad70d73a01a04940ceefcc0506c8867aa99be1e1598f7f57d79dc462ba1d",
   "upstream_digest_arm64": "sha256:5f44dcee2c34486af761dca45b1a7b57ef953ee485050544c2255c6f21ed0278",
   "test_url": "http://localhost:8989/system/status",
-  "changelog": "https://github.com/sonarr/sonarr/compare/v4.0.0.741...v4.0.0.748"
+  "changelog": "https://github.com/sonarr/sonarr/compare/v4.0.0.748...v4.0.1.929"
 }
