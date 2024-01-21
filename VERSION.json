@@ -1,13 +1,13 @@
 {
   "description": "develop/v4-nightly",
-  "version": "4.0.1.947",
+  "version": "4.0.1.933",
   "sbranch": "develop",
   "upstream_image": "ghcr.io/hotio/base",
   "upstream_tag": "alpine",
   "upstream_digest_amd64": "sha256:aba1ad70d73a01a04940ceefcc0506c8867aa99be1e1598f7f57d79dc462ba1d",
   "upstream_digest_arm64": "sha256:5f44dcee2c34486af761dca45b1a7b57ef953ee485050544c2255c6f21ed0278",
   "test_url": "http://localhost:8989/system/status",
-  "changelog": "https://github.com/sonarr/sonarr/compare/v4.0.1.933...v4.0.1.947",
-  "amd64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.1.947/Sonarr.develop.4.0.1.947.linux-musl-x64.tar.gz",
-  "arm64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.1.947/Sonarr.develop.4.0.1.947.linux-musl-arm64.tar.gz"
+  "changelog": "https://github.com/sonarr/sonarr/compare/v4.0.1.947...v4.0.1.933",
+  "amd64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.1.933/Sonarr.develop.4.0.1.933.linux-musl-x64.tar.gz",
+  "arm64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.1.933/Sonarr.develop.4.0.1.933.linux-musl-arm64.tar.gz"
 }
