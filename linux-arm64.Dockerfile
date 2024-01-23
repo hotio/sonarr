@@ -3,7 +3,6 @@ ARG UPSTREAM_DIGEST_ARM64
 
 FROM ${UPSTREAM_IMAGE}@${UPSTREAM_DIGEST_ARM64}
 EXPOSE 8989
-VOLUME ["${CONFIG_DIR}"]
 
 RUN apk add --no-cache libintl sqlite-libs icu-libs
 
