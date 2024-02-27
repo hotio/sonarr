@@ -14,13 +14,13 @@
   "release": {
     "description": "main/v4-stable",
     "hide": false,
-    "last_updated": "2024-02-27T13:51:36.000Z",
-    "last_updated_url": "https://github.com/hotio/sonarr/actions/runs/8065675236",
+    "last_updated": "2024-02-27T17:29:14.000Z",
+    "last_updated_url": "https://github.com/hotio/sonarr/actions/runs/8068849119",
     "latest": true,
     "tags": [
       "release",
-      "release-4.0.1.929",
-      "release-71c238c"
+      "release-4.0.2.1183",
+      "release-a8b1f0b"
     ]
   }
 }
