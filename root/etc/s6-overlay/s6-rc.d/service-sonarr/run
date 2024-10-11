@@ -3,4 +3,5 @@
 
 umask "${UMASK}"
 
+cd "${APP_DIR}/bin" || exit 1
 exec s6-setuidgid hotio "${APP_DIR}/bin/Sonarr" --nobrowser --data="${CONFIG_DIR}"
