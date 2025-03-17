@@ -1,6 +1,6 @@
 {
-  "amd64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.13.2932/Sonarr.main.4.0.13.2932.linux-musl-x64.tar.gz",
-  "arm64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.13.2932/Sonarr.main.4.0.13.2932.linux-musl-arm64.tar.gz",
+  "amd64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.14.2939/Sonarr.main.4.0.14.2939.linux-musl-x64.tar.gz",
+  "arm64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.14.2939/Sonarr.main.4.0.14.2939.linux-musl-arm64.tar.gz",
   "description": "main/v4-stable",
   "latest": true,
   "sbranch": "main",
@@ -11,5 +11,5 @@
   "upstream_digest_arm64": "sha256:a3ca88b4effcc2ff8922dc9e3098b2c33d818247706d286038c5f8f16a25137a",
   "upstream_image": "ghcr.io/hotio/base",
   "upstream_tag": "alpinevpn",
-  "version": "4.0.13.2932"
+  "version": "4.0.14.2939"
 }
