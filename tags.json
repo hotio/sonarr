@@ -2,13 +2,13 @@
   "nightly": {
     "description": "develop/v4-nightly",
     "hide": false,
-    "last_updated": "2025-04-16T14:32:46.000Z",
-    "last_updated_url": "https://github.com/hotio/sonarr/actions/runs/14495096744",
+    "last_updated": "2025-04-16T16:38:40.000Z",
+    "last_updated_url": "https://github.com/hotio/sonarr/actions/runs/14497736908",
     "latest": false,
     "tags": [
       "nightly",
       "nightly-4.0.14.2938",
-      "nightly-a48f945"
+      "nightly-4d439b7"
     ]
   },
   "release": {
