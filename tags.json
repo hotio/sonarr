@@ -16,15 +16,19 @@
     ]
   },
   "release": {
+    "commit_message": "Upstream image update",
     "description": "main/v4-stable",
     "hide": false,
-    "last_updated": "2025-12-31T17:25:47.000Z",
-    "last_updated_url": "https://github.com/hotio/sonarr/actions/runs/20623617346",
+    "last_updated": "2026-01-04T09:27:04.000Z",
+    "last_updated_url": "https://github.com/hotio/sonarr/actions/runs/20690839323",
     "latest": true,
     "tags": [
       "release",
       "release-4.0.16.2944",
-      "release-77302ad"
+      "release-bd86720",
+      "",
+      "",
+      ""
     ]
   }
 }
