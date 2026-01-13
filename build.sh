@@ -7,7 +7,7 @@ if [[ -z ${1} ]]; then
 fi
 
 while IFS= read -r line; do
-  opts+=(--build-arg "$line")
+    opts+=(--build-arg "$line")
 done <<< "$(jq -r 'to_entries[] | [(.key | ascii_upcase),.value] | join("=")' < meta.json)"
 
 image=$(basename "$(git rev-parse --show-toplevel)")
