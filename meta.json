@@ -1,8 +1,8 @@
 {
-  "amd64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.16.2946/Sonarr.develop.4.0.16.2946.linux-musl-x64.tar.gz",
-  "arm64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.16.2946/Sonarr.develop.4.0.16.2946.linux-musl-arm64.tar.gz",
+  "version_amd64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.16.2946/Sonarr.develop.4.0.16.2946.linux-musl-x64.tar.gz",
+  "version_arm64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.16.2946/Sonarr.develop.4.0.16.2946.linux-musl-arm64.tar.gz",
   "description": "develop/v4-nightly",
-  "sbranch": "develop",
+  "version_branch": "develop",
   "test_amd64": true,
   "test_arm64": true,
   "test_url": "http://localhost:8989/system/status",
