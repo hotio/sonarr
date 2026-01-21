@@ -5,7 +5,7 @@
   "test_url": "http://localhost:8989/system/status",
   "upstream_image": "ghcr.io/hotio/base",
   "upstream_tag": "alpinevpn",
-  "upstream_tag_sha": "alpinevpn-7a36f80",
+  "upstream_tag_sha": "alpinevpn-1d9f62f",
   "version": "4.0.16.2946",
   "version_amd64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.16.2946/Sonarr.develop.4.0.16.2946.linux-musl-x64.tar.gz",
   "version_arm64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.16.2946/Sonarr.develop.4.0.16.2946.linux-musl-arm64.tar.gz",
