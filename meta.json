@@ -6,8 +6,8 @@
   "upstream_image": "ghcr.io/hotio/base",
   "upstream_tag": "alpinevpn",
   "upstream_tag_sha": "alpinevpn-9abb66b",
-  "version": "4.0.16.2946",
-  "version_amd64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.16.2946/Sonarr.develop.4.0.16.2946.linux-musl-x64.tar.gz",
-  "version_arm64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.16.2946/Sonarr.develop.4.0.16.2946.linux-musl-arm64.tar.gz",
+  "version": "4.0.17.2950",
+  "version_amd64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.17.2950/Sonarr.develop.4.0.17.2950.linux-musl-x64.tar.gz",
+  "version_arm64_url": "https://github.com/Sonarr/Sonarr/releases/download/v4.0.17.2950/Sonarr.develop.4.0.17.2950.linux-musl-arm64.tar.gz",
   "version_branch": "develop"
 }
