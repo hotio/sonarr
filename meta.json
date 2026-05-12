@@ -1,7 +1,6 @@
 {
   "description": "main/v4-stable",
   "latest": true,
-  "packages_hash": "9b8c6cfe9a5db9f371ed10ec253b20d92d8d3c47",
   "test_amd64": true,
   "test_arm64": true,
   "test_url": "http://localhost:8989/system/status",
