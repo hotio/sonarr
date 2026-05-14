@@ -1,0 +1,11 @@
+name: call-update
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron:  '0 * * * *'
+
+jobs:
+  call:
+    uses: hotio/build-workflow/.github/workflows/update-on-call.yml@master
+    secrets: inherit
