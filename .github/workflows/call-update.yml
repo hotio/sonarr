@@ -7,5 +7,5 @@ on:
 
 jobs:
   call:
-    uses: hotio/build-workflow/.github/workflows/update-on-call.yml@master
+    uses: hotio/base/.github/workflows/update-on-call.yml@workflows
     secrets: inherit

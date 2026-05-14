@@ -4,9 +4,9 @@ on:
   workflow_dispatch:
   push:
     branches-ignore:    
-      - 'master'
+      - 'workflows'
 
 jobs:
   call:
-    uses: hotio/build-workflow/.github/workflows/build-on-call.yml@master
+    uses: hotio/base/.github/workflows/build-on-call.yml@workflows
     secrets: inherit
