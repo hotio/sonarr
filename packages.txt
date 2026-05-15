@@ -16,7 +16,7 @@ coreutils-9.8-r1
 coreutils-env-9.8-r1
 coreutils-fmt-9.8-r1
 coreutils-sha512sum-9.8-r1
-curl-8.17.0-r1
+curl-8.19.0-r0
 dnssec-root-20250524-r0
 dos2unix-7.5.3-r0
 figlet-2.2.5-r3
@@ -43,7 +43,7 @@ libcap-setcap-2.78-r0
 libcap-utils-2.78-r0
 libcap2-2.78-r0
 libcrypto3-3.5.6-r0
-libcurl-8.17.0-r1
+libcurl-8.19.0-r0
 libelf-0.194-r0
 libevent-2.1.12-r8
 libexpat-2.7.5-r0
@@ -71,7 +71,6 @@ musl-utils-1.2.5-r23
 ncurses-terminfo-base-6.5_p20251123-r0
 nftables-1.1.5-r2
 nghttp2-libs-1.69.0-r0
-nghttp3-1.13.1-r0
 oniguruma-6.9.10-r0
 openresolv-3.17.4-r0
 outils-rs-0.14-r0
