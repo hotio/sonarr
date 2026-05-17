@@ -8,7 +8,7 @@ fi
 
 while IFS= read -r line; do
     opts+=(--build-arg "$line")
-done <<< "$(jq -r 'to_entries[] | [(.key | ascii_upcase),.value] | join("=")' < meta.json)"
+done <<< "$(jq -r 'to_entries[] | [(.key | ascii_upcase),.value] | join("=")' < meta.json | grep -v '__command')"
 
 image=$(basename "$(git rev-parse --show-toplevel)")
 
