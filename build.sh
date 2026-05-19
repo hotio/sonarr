@@ -26,7 +26,7 @@ fi
 if [[ ${1} == "amd64" || ${1} == "arm64" ]]; then
     while IFS= read -r line; do
         opts+=(--build-arg "$line")
-    done <<< "$(jq -r 'to_entries[] | [(.key | ascii_upcase),.value] | join("=")' < meta.json | grep -v '__command')"
+    done <<< "$(jq -r 'to_entries[] | [(.key | ascii_upcase),.value] | join("=")' < meta.json | grep -v '__COMMAND')"
     image=$(basename "$(git rev-parse --show-toplevel)")
     docker build --secret id=GIT_AUTH_TOKEN,env=TOKEN --platform "linux/${1}" -f "./linux-${1}.Dockerfile" -t "${image}-${1}" "${opts[@]}" .
 fi
