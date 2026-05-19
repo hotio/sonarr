@@ -10,6 +10,7 @@ fi
 set -euo pipefail
 
 if [[ ${1} == "update" ]]; then
+    rm -f cache-page*.json
     while read -r line; do
         key="${line%%=*}"
         key="${key%__command}"
@@ -19,6 +20,7 @@ if [[ ${1} == "update" ]]; then
         jq --sort-keys --arg key "$key" --arg value "$value" '.[$key] = $value' <<< "${json}" > meta.json
         echo "Result: [${key}] [${value}]"
     done < <(jq -r 'to_entries[] | [(.key),.value] | join("=")' < meta.json | grep '__command')
+    rm -f cache-page*.json
 fi
 
 if [[ ${1} == "amd64" || ${1} == "arm64" ]]; then
