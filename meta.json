@@ -1,5 +1,5 @@
 {
-  "description": "develop/v4-nightly",
+  "description": "develop/v5-nightly",
   "test_amd64": true,
   "test_arm64": true,
   "test_url": "http://localhost:8989/system/status",
